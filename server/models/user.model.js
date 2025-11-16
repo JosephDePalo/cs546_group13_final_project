@@ -38,7 +38,9 @@ const accountStatsSchema = new mongoose.Schema(
         "Derived: Count(Comments) — number of comments made by the user.",
     },
   },
-  { _id: false }
+  {
+    timestamps: true,
+  }
 );
 
 const userSchema = new mongoose.Schema(
@@ -71,6 +73,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
       unique: true,
+      sparse: true,
       match: [/^[0-9]{10}$/, "Invalid phone number: must be 10 digits"],
       description:
         "Optional phone number for communication/verification purposes.",
