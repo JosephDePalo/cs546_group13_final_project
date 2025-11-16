@@ -1,0 +1,18 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+logs/
+
+# macOS junk
+.DS_Store
+
+# Editor junk
+.vscode/
+
+# Swagger temp
+openapi.json

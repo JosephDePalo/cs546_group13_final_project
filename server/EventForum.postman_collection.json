@@ -1,0 +1,68 @@
+{
+  "info": {
+    "name": "Event Forum API",
+    "_postman_id": "event-forum-collection-id",
+    "description": "Manual Postman collection for Event Forum backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "User - Register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"testuser\",\n  \"password\": \"pass123\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/users/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "users", "register"]
+        }
+      }
+    },
+    {
+      "name": "User - Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"testuser\",\n  \"password\": \"pass123\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/users/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "users", "login"]
+        }
+      }
+    },
+    {
+      "name": "User - Get Profile",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "<paste your JWT token here>"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/v1/users/profile",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "users", "profile"]
+        }
+      }
+    }
+  ]
+}
