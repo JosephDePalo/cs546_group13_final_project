@@ -1,24 +1,42 @@
 {
   "info": {
-    "name": "Event Forum API",
-    "_postman_id": "event-forum-collection-id",
-    "description": "Postman collection for Event Forum backend (with auto JWT extraction)",
+    "name": "Event Forum API - Workflow",
+    "_postman_id": "event-forum-workflow-collection",
+    "description": "Automated workflow for full backend testing with random user creation, login, protected routes, and cleanup deletion.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "User - Register",
+      "name": "00 - Setup Random User",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const r = Math.floor(Math.random() * 1000000);",
+              "pm.environment.set('RAND_USERNAME', `user_${r}`);",
+              "pm.environment.set('RAND_EMAIL', `user_${r}@mail.com`);",
+              "pm.environment.set('RAND_PASS', 'pass123');",
+              "console.log('Generated user:', pm.environment.get('RAND_USERNAME'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{API_URL}}/noop", "host": ["{{API_URL}}"], "path": ["noop"] }
+      }
+    },
+
+    {
+      "name": "01 - Register User",
       "request": {
         "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"testuser\",\n  \"password\": \"pass123\"\n}"
+          "raw": "{\n  \"username\": \"{{RAND_USERNAME}}\",\n  \"email\": \"{{RAND_EMAIL}}\",\n  \"password\": \"{{RAND_PASS}}\"\n}"
         },
         "url": {
           "raw": "{{API_URL}}/api/v1/users/register",
@@ -27,38 +45,28 @@
         }
       }
     },
+
     {
-      "name": "User - Login (Auto Save Token)",
+      "name": "02 - Login (Save Token + UserId)",
       "event": [
         {
           "listen": "test",
           "script": {
+            "type": "text/javascript",
             "exec": [
-              "// Extract JWT token from response",
               "const res = pm.response.json();",
-              "",
-              "if (res && res.token) {",
-              "    pm.environment.set('TOKEN', res.token);",
-              "    console.log('TOKEN saved:', res.token);",
-              "} else {",
-              "    console.warn('No token found in response');",
-              "}"
-            ],
-            "type": "text/javascript"
+              "if (res && res.token) pm.environment.set('TOKEN', res.token);",
+              "if (res && res.user && res.user._id) pm.environment.set('USER_ID', res.user._id);"
+            ]
           }
         }
       ],
       "request": {
         "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"testuser\",\n  \"password\": \"pass123\"\n}"
+          "raw": "{\n  \"username\": \"{{RAND_USERNAME}}\",\n  \"password\": \"{{RAND_PASS}}\"\n}"
         },
         "url": {
           "raw": "{{API_URL}}/api/v1/users/login",
@@ -67,21 +75,95 @@
         }
       }
     },
+
     {
-      "name": "User - Get Profile (Protected)",
+      "name": "03 - Get Profile",
       "request": {
         "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "{{TOKEN}}",
-            "type": "text"
-          }
-        ],
+        "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
         "url": {
           "raw": "{{API_URL}}/api/v1/users/profile",
           "host": ["{{API_URL}}"],
           "path": ["api", "v1", "users", "profile"]
+        }
+      }
+    },
+
+    {
+      "name": "04 - Update Profile",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{TOKEN}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"city\": \"Hoboken\",\n  \"state\": \"NJ\",\n  \"first_name\": \"Workflow\",\n  \"last_name\": \"User\"\n}"
+        },
+        "url": {
+          "raw": "{{API_URL}}/api/v1/users/profile",
+          "host": ["{{API_URL}}"],
+          "path": ["api", "v1", "users", "profile"]
+        }
+      }
+    },
+
+    {
+      "name": "05 - Update Password",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{TOKEN}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"current_password\": \"{{RAND_PASS}}\",\n  \"new_password\": \"updatedPass456\"\n}"
+        },
+        "url": {
+          "raw": "{{API_URL}}/api/v1/users/password",
+          "host": ["{{API_URL}}"],
+          "path": ["api", "v1", "users", "password"]
+        }
+      }
+    },
+
+    {
+      "name": "06 (Admin) - Get All Users",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+        "url": {
+          "raw": "{{API_URL}}/api/v1/users",
+          "host": ["{{API_URL}}"],
+          "path": ["api", "v1", "users"]
+        }
+      }
+    },
+
+    {
+      "name": "07 (Admin) - Get User By ID",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+        "url": {
+          "raw": "{{API_URL}}/api/v1/users/{{USER_ID}}",
+          "host": ["{{API_URL}}"],
+          "path": ["api", "v1", "users", "{{USER_ID}}"]
+        }
+      }
+    },
+
+    {
+      "name": "08 (Admin) - Delete User (Cleanup)",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+        "url": {
+          "raw": "{{API_URL}}/api/v1/users/{{USER_ID}}",
+          "host": ["{{API_URL}}"],
+          "path": ["api", "v1", "users", "{{USER_ID}}"]
         }
       }
     }
