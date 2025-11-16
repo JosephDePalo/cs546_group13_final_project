@@ -1,27 +1,35 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
-const protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
   try {
     let token = req.headers.authorization;
 
     if (!token) {
-      res.status(401).json({ message: "No Token Provided" });
+      return res.status(401).json({ message: "No token provided." });
     }
 
-    // Validate user sent jwt token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Fetching user without password
-    let user = await User.findById(decoded.id).select("-password");
+    // Fetch user without sensitive fields
+    const user = await User.findById(decoded.id).select("-password_hash -otp");
+
     if (!user) {
-      return res.status(404).json({ message: "User does not exists" });
+      return res.status(404).json({ message: "User does not exist." });
     }
+
     req.user = user;
     next();
   } catch (error) {
-    res.status(401).send(error);
+    console.error("Auth error:", error.message);
+    res.status(401).json({ message: "Not authorized." });
   }
 };
 
-export { protect };
+export const admin = (req, res, next) => {
+  if (req.user && req.user.is_admin) {
+    next();
+  } else {
+    res.status(403).json({ message: "Not authorized as admin." });
+  }
+};
