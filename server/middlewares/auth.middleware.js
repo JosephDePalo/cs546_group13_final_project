@@ -9,6 +9,11 @@ export const protect = async (req, res, next) => {
       return res.status(401).json({ message: "No token provided." });
     }
 
+    // Support for "Bearer <token>" format
+    if (token.startsWith("Bearer ")) {
+      token = token.split(" ")[1];
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Fetch user without sensitive fields

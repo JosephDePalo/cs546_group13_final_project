@@ -3,22 +3,34 @@ import {
   register,
   login,
   getUserProfile,
+  updateUserProfile,
+  updatePassword,
+  getUsers,
+  getUserById,
+  deleteUser,
 } from "../controllers/user.controller.js";
 import { protect, admin } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// Access: Public
-router
-  .post("/register", register)
-  .post("/login", login)
+// Public routes
+router.post("/register", register);
+router.post("/login", login);
 
-  // Access: Private
-  .get("/profile", protect, getUserProfile)
-  .get("/", protect, getUserProfile)
-  .get("/:id", protect, getUserProfile)
-  .put("/profile", protect, admin, getUserProfile)
-  .put("/password", protect, admin, getUserProfile)
-  .delete("/:id", protect, admin, getUserProfile);
+// Private routes
+router
+  .route("/profile")
+  .get(protect, getUserProfile)
+  .put(protect, updateUserProfile);
+
+router.put("/password", protect, updatePassword);
+
+// Admin routes
+router.get("/", protect, admin, getUsers);
+
+router
+  .route("/:id")
+  .get(protect, admin, getUserById)
+  .delete(protect, admin, deleteUser);
 
 export default router;

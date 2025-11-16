@@ -26,8 +26,10 @@ export const login = async (req, res) => {
     res.json({
       login: "success",
       user: {
+        _id: user._id,
         username: user.username,
         email: user.email,
+        is_admin: user.is_admin,
       },
       token: generateToken(user._id),
     });
@@ -42,7 +44,7 @@ export const login = async (req, res) => {
 // @access   Public
 export const register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, is_admin } = req.body;
 
     const userExists = await User.findOne({
       $or: [{ username }, { email }],
@@ -58,6 +60,7 @@ export const register = async (req, res) => {
       username,
       email,
       password_hash: password,
+      is_admin: is_admin,
     });
 
     const safeUser = user.toObject();
@@ -68,6 +71,7 @@ export const register = async (req, res) => {
       user: {
         username: user.username,
         email: user.email,
+        is_admin: user.is_admin,
       },
       token: generateToken(user._id),
     });
