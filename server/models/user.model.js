@@ -40,7 +40,7 @@ const accountStatsSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const userSchema = new mongoose.Schema(
@@ -153,7 +153,7 @@ const userSchema = new mongoose.Schema(
   // timestamps: created_at and updated_at
   {
     timestamps: true,
-  }
+  },
 );
 
 // compare password
