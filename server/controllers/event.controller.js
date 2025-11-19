@@ -1,0 +1,125 @@
+import Event from "../models/event.model.js";
+
+// @desc     Create new event
+// @route    POST /api/events
+// @access   Public
+export const newEvent = async (req, res) => {
+  try {
+    const { title, start_time, end_time, max_capacity } = req.body;
+
+    const eventExists = Event.findOne({
+      $and: [
+        { title },
+        { organizer_id: req.user._id },
+        { $or: [{ status: "Ongoing" }, { status: "Upcoming" }] },
+      ],
+    });
+    if (eventExists) {
+      return res.status(400).json({
+        message:
+          "You have already created an upcoming or ongoing event with this title.",
+      });
+    }
+
+    const event = await Event.create({
+      organizer_id: req.user._id,
+      title,
+      start_time,
+      end_time,
+      max_capacity,
+    });
+
+    res.json(event);
+  } catch (err) {
+    console.error("New event error:", err.message);
+  }
+};
+
+// @desc     Get event
+// @route    GET /api/events/:id
+// @access   Public
+
+export const getEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    return res.json(event);
+  } catch (err) {
+    console.error("Get event error:", err.message);
+    res.status(500).json({ message: "Unable to fetch event." });
+  }
+};
+
+// @desc     Update event
+// @route    PUT /api/events/:id
+// @access   Private/Admin
+export const updateEventDetails = async (req, res) => {
+  try {
+    let updates = req.body;
+
+    delete updates._id;
+    delete updates.organizer_id;
+    delete updates.disabled;
+    delete updates.disabled_at;
+    delete updates.disabled_by;
+
+    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+    });
+
+    if (!updatedEvent) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    return res.json(updatedEvent);
+  } catch (err) {
+    return res.status(500).json({ message: "Unable to update event details." });
+  }
+};
+
+// @desc     Disable event
+// @route    PUT /api/events/disable/:id
+// @access   Admin
+export const disableEvent = async (req, res) => {
+  try {
+    let disabled_data = {
+      disabled: true,
+      disabled_at: new Date(),
+      disabled_by: req.user._id,
+    };
+
+    const disabledEvent = await Event.findByIdAndUpdate(
+      req.params.id,
+      disabled_data,
+      {
+        new: true,
+      },
+    );
+
+    res.json(disabledEvent);
+  } catch (err) {
+    return res.status(500).json({ message: "Unable to disable event." });
+  }
+};
+
+// @desc     Delete event
+// @route    DELETE /api/events/:id
+// @access   Private/Admin
+export const deleteEvent = async (req, res) => {
+  try {
+    const event = await Event.findByIdAndDelete(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    return res.json(event);
+  } catch (err) {
+    console.error("Delete event error:", err.message);
+    res.status(500).json({ message: "Unable to delete event." });
+  }
+};
