@@ -72,7 +72,7 @@ export const updateEventDetails = async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
     } else if (!req.user.is_admin && !event.organizer_id.equals(req.user._id)) {
-      return res.status(401).json({ message: "User does not own this event." });
+      return res.status(403).json({ message: "User does not own this event." });
     }
 
     const updatedEvent = await Event.findByIdAndUpdate(req.params.id, updates, {
