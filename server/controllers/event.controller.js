@@ -118,11 +118,15 @@ export const disableEvent = async (req, res) => {
 // @access   Private/Admin
 export const deleteEvent = async (req, res) => {
   try {
-    const event = await Event.findByIdAndDelete(req.params.id);
+    const event = await Event.findById(req.params.id);
 
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
+    } else if (!req.user.is_admin && !event.organizer_id.equals(req.user._id)) {
+      return res.status(403).json({ message: "User does not own this event." });
     }
+
+    await event.deleteOne();
 
     return res.json(event);
   } catch (err) {
