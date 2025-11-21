@@ -84,6 +84,7 @@ export const updateEventDetails = async (req, res) => {
 
     res.json(updatedEvent);
   } catch (err) {
+    console.error("Update event details error:", err.message);
     res.status(500).json({ message: "Unable to update event details." });
   }
 };
@@ -109,6 +110,7 @@ export const disableEvent = async (req, res) => {
 
     res.json(disabledEvent);
   } catch (err) {
+    console.error("Disable event error:", err.message);
     res.status(500).json({ message: "Unable to disable event." });
   }
 };
