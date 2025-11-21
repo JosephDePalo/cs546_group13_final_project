@@ -32,6 +32,7 @@ export const newEvent = async (req, res) => {
     res.json(event);
   } catch (err) {
     console.error("New event error:", err.message);
+    res.status(500).json({ message: "Internal server error." });
   }
 };
 
