@@ -55,6 +55,20 @@ export const getEvent = async (req, res) => {
   }
 };
 
+// @desc     Get event
+// @route    GET /api/events
+// @access   Public
+
+export const getEvents = async (req, res) => {
+  try {
+    const events = await Event.find();
+    res.json(events);
+  } catch (err) {
+    console.error("Get events error:", err.message);
+    res.status(500).json({ message: "Unable to fetch events." });
+  }
+};
+
 // @desc     Update event
 // @route    PUT /api/events/:id
 // @access   Private/Admin
