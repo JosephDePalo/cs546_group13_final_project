@@ -109,6 +109,10 @@ export const disableEvent = async (req, res) => {
       },
     );
 
+    if (!disabledEvent) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
     res.json(disabledEvent);
   } catch (err) {
     console.error("Disable event error:", err.message);
