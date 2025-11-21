@@ -1,4 +1,4 @@
-import Comment from '../models/Comments.model.js';
+import Comment from '../models/comments.model.js';
 
 // Check if the user has permission to comment.
 const checkCommentOwnership = async (req, res, next) => {
@@ -71,4 +71,5 @@ const checkCommentAvailability = async (req, res, next) => {
 export {
   checkCommentOwnership,
   checkCommentAvailability
+
 };
