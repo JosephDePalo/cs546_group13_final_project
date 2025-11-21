@@ -2,12 +2,12 @@ import Event from "../models/event.model.js";
 
 // @desc     Create new event
 // @route    POST /api/events
-// @access   Public
+// @access   Private
 export const newEvent = async (req, res) => {
   try {
     const { title, start_time, end_time, max_capacity } = req.body;
 
-    const eventExists = Event.findOne({
+    const eventExists = await Event.findOne({
       $and: [
         { title },
         { organizer_id: req.user._id },
