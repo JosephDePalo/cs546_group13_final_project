@@ -47,7 +47,7 @@ export const getEvent = async (req, res) => {
       return res.status(404).json({ message: "Event not found." });
     }
 
-    return res.json(event);
+    res.json(event);
   } catch (err) {
     console.error("Get event error:", err.message);
     res.status(500).json({ message: "Unable to fetch event." });
@@ -82,9 +82,9 @@ export const updateEventDetails = async (req, res) => {
       return res.status(404).json({ message: "Event not found." });
     }
 
-    return res.json(updatedEvent);
+    res.json(updatedEvent);
   } catch (err) {
-    return res.status(500).json({ message: "Unable to update event details." });
+    res.status(500).json({ message: "Unable to update event details." });
   }
 };
 
@@ -109,7 +109,7 @@ export const disableEvent = async (req, res) => {
 
     res.json(disabledEvent);
   } catch (err) {
-    return res.status(500).json({ message: "Unable to disable event." });
+    res.status(500).json({ message: "Unable to disable event." });
   }
 };
 
@@ -128,7 +128,7 @@ export const deleteEvent = async (req, res) => {
 
     await event.deleteOne();
 
-    return res.json(event);
+    res.json(event);
   } catch (err) {
     console.error("Delete event error:", err.message);
     res.status(500).json({ message: "Unable to delete event." });
