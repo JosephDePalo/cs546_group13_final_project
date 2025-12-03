@@ -38,13 +38,6 @@ const eventStatsSchema = new mongoose.Schema(
       },
       description: "The number of people currently registered for an event.",
     },
-
-    stats: {
-      type: eventStatsSchema,
-      default: {},
-      description:
-        "Aggregated statistics representing event attendance and engagement.",
-    },
   },
   {
     timestamps: true,
@@ -204,6 +197,10 @@ const eventSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
       description: "Tags for the event to be used for searching and filtering.",
+    },
+    stats: {
+      type: eventStatsSchema,
+      default: {},
     },
   },
   {
