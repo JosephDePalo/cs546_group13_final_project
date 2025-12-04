@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import userRoutes from "./routes/user.routes.js";
+import eventRoutes from "./routes/event.routes.js";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 
@@ -18,6 +19,7 @@ app.get("/health", (req, res) => {
 
 // Routes
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/events", eventRoutes);
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
