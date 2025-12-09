@@ -6,12 +6,16 @@ import Report from "../models/report.model.js";
 
 export const newReport = async (req, res) => {
     try {
-        const {user_id, event_id, violation, description} = req.body;
+        const {reporter_id, target_type, target_id, reason, description, severity} = req.body;
+        let current_date = new Date();
         const report = await Report.create({
-            user_id,
-            event_id,
-            violation,
-            description
+            reporter_id,
+            target_type,
+            target_id,
+            reason,
+            description, 
+            severity,
+            created_at: current_date
         });
 
         res.json(report);
@@ -61,13 +65,12 @@ export const updateReport = async (req, res) => {
         let new_report = req.body;
 
         delete new_report._id;
-        delete new_report.disabled;
-        delete new_report.disabled_at;
-        delete new_report.disabled_by;
 
         const report = await Report.findById(req.params.id);
         if (!report) {
             return res.status(404).json({ message: "Report not found." });
+        } else if (!req.user.is_admin) {
+            return res.status(403).json({ message: "User does not have permissions to edit this report." });
         }
 
         const updatedReport = await Report.findByIdAndUpdate(req.params.id, new_report, {
@@ -78,7 +81,17 @@ export const updateReport = async (req, res) => {
             return res.status(404).json({ message: "Report not found." });
         }
 
-        res.json(updatedReport);
+        let current_date = new Date();
+
+        const updatedReport2 = await Report.findByIdAndUpdate(req.params.id, {updated_at: current_date}, {
+            new: true,
+        });
+
+        if (!updatedReport2) {
+            return res.status(404).json({ message: "Report not found." });
+        }
+
+        res.json(updatedReport2);
     } catch (err) {
         console.error("Update report error:", err.message);
         res.status(500).json({ message: "Unable to update report." });
@@ -93,7 +106,7 @@ export const deleteReport = async (req, res) => {
         const report = await Report.findById(req.params.id);
 
         if (!report) {
-            return res.status(404).json({ message: "Event not found." });
+            return res.status(404).json({ message: "Report not found." });
         } else if (!req.user.is_admin){
             return res.status(403).json({ message: "Only admins can delete reports!"})
         }
@@ -105,4 +118,38 @@ export const deleteReport = async (req, res) => {
         console.error("Delete report error:", err.message);
         res.status(500).json({ message: "Unable to delete report" });
     } 
+}
+
+// @desc     resolve the report once evaluated by an admin 
+// @access   Private/Admin
+
+export const resolveReport = async (req, res) => {
+    try {
+        const report = await Report.findById(req.params.id);
+
+        if (!report) {
+            return res.status(404).json({ message: "Report not found." });
+        } else if (!req.user.is_admin){
+            return res.status(403).json({ message: "Only admins can delete reports!"})
+        }
+
+        const {resolution_status, responding_admin_id, responding_admin_notes, resolution_decision} = req.body;
+        let current_date = new Date();
+
+        const resolvedReport = await Report.findByIdAndUpdate(req.params.id, {resolution_status: resolution_status, 
+            responding_admin_id: responding_admin_id,
+            responding_admin_notes: responding_admin_notes,
+            resolution_decision: resolution_decision,
+            resolved_at: current_date}, {
+            new: true,
+        });
+
+        if (!resolvedReport) {
+            return res.status(404).json({ message: "Report not found." });
+        }
+
+    } catch (err) {
+        console.error("Resolve report error:", err.message);
+        res.status(500).json({ message: "Unable to resolve report" });
+    }
 }
