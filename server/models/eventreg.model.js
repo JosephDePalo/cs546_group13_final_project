@@ -15,54 +15,38 @@ const eventRegSchema = new mongoose.Schema(
             ref: "Events",
             description: "id of the user registering for an event"
         },
-        title: {
-            type: String,
-            required: [true, "Field: title is required and cannot be null"],
-            trim: true,
-            minlength: [5, "Invalid title length: min 5 chars"],
-            maxlength: [50, "Invalid title length: max 50 chars"],
-            match: [
-                /^[a-zA-Z0-9_-]+$/,
-                "Invalid title format: Only letters, numbers, _, and - allowed",
-            ],
-        description: "Displayed title of an event.",
-        },
-        description: {
-            type: String,
-            default: null,
-            trim: true,
-            maxlength: [500, "Invalid description length: max 500 chars"]
-        },
-        disabled: {
-            type: Boolean,
-            default: false,
-            description: "Can be toggled by admins to hide malicious or reported events (which in turn disables the event regs).",
-        },
-
-        disabled_at: {
+        registered_at: {
             type: Date,
             default: null,
-            description: "The date that an event/eventreg was disabled.",
+            description: "Timestamp of registration."
+        },
+        attended: {
+            type: Boolean,
+            default: false,
+            description: "T/F if attended or not"
+        },
+        checkin_time: {
+            type: Date,
+            default: null,
+            description: "Timestamp of check in."
         },
 
-        disabled_reason: {
-            type: String,
-            trim: true,
-            default: null,
-            description: "The reason that an event/eventreg was disabled.",
+        cancelled: {
+            type: Boolean,
+            default: false,
+            description: "T/F if cancelled or not"
         },
 
-        disabled_by: {
-            type: ObjectId,
+        cancelled_at: {
+            type: Date,
             default: null,
-            ref: "Users",
-            description: "The user that disabled the event/eventreg",
-        },
+            description: "Timestamp of cancellation."
+        }
     },
     {
     timestamps: true,
     },
 )
 
-const Report = mongoose.model("EventRegistration", eventRegSchema);
-export default Report;
+const EventRegistration = mongoose.model("EventRegistration", eventRegSchema);
+export default EventRegistration;
