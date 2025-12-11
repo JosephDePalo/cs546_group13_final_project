@@ -1,0 +1,56 @@
+<h1>Event Management - {{title}}</h1>
+
+
+<form id="overview-edit-form" name="overview-edit-form" action="/api/v1/events/{{_id}}?_method=PUT" method="POST">
+
+  <h2>Overview</h2>
+
+  <div class="form-item">
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" value="{{title}}">
+  </div>
+
+  <div class="form-item">
+    <label for="Description">Description</label>
+    <textarea rows="5" cols="50">{{description}}</textarea>
+  </div>
+
+  <div class="form-item">
+    <label for="start_time">Start Time</label>
+    <input type="text" id="start_time" name="start_time" value="{{formatted_start_time}}">
+  </div>
+
+  <div class="form-item">
+    <label for="end_time">End Time</label>
+    <input type="text" id="end_time" name="end_time" value="{{formatted_end_time}}">
+  </div>
+
+  <div class="form-item">
+    <label for="max_capacity">Max Capacity</label>
+    <input type="number" id="max_capacity" name="max_capacity" value="{{max_capacity}}">
+  </div>
+
+  <h2>Other</h2>
+
+  <div class="form-item">
+    <label for="address">Address</label>
+    <input type="text" id="address" name="address" value="{{address}}">
+  </div>
+
+  <div class="form-item">
+    <label for="city">City</label>
+    <input type="text" id="city" name="city" value="{{city}}">
+  </div>
+
+  <div class="form-item">
+    <label for="state">State</label>
+    <input type="text" id="state" name="state" value="{{state}}">
+  </div>
+
+  <div class="form-item">
+    <label for="location_url">Location URL</label>
+    <input type="text" id="location_url" name="location_url" value="{{location_url}}">
+  </div>
+
+
+</form>
