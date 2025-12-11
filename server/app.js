@@ -37,6 +37,9 @@ app.use("/api/v1/events", eventRoutes);
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+// Pages
+app.use("/", pageRoutes);
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: `Resource ${req.originalUrl} not found` });

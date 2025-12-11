@@ -55,7 +55,7 @@ export const register = async (req, res) => {
       username,
       email,
       password_hash: password,
-      is_admin: is_admin,
+      is_admin: Boolean(is_admin),
     });
 
     const safeUser = user.toObject();
