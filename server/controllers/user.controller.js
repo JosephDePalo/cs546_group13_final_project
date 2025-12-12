@@ -2,40 +2,35 @@ import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.js";
 import User from "../models/user.model.js";
 
-// @desc     Auth user & get token
-// @route    POST /api/users/login
+// @desc     Auth user, set JWT cookie, redirect to protected page
+// @route    POST /api/v1/users/login
 // @access   Public
 export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
     const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid username or password." });
+    if (!user || !(await user.matchPassword(password))) {
+      return res.status(401).json({
+        message: "Invalid username or password",
+      });
     }
 
-    const isMatch = await user.matchPassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid username or password." });
-    }
+    const token = generateToken(user._id);
 
-    const safeUser = user.toObject();
-    delete safeUser.password_hash;
-    delete safeUser.otp;
-
-    res.json({
-      login: "success",
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        is_admin: user.is_admin,
-      },
-      token: generateToken(user._id),
+    res.cookie("Authorization", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     });
+
+    // Redirect to protected page after successful login
+    return res.redirect("/example-protected");
   } catch (err) {
     console.error("Login error:", err.message);
-    res.status(500).json({ message: "Internal server error." });
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };
 
@@ -182,7 +177,7 @@ export const getUsers = async (req, res) => {
 export const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select(
-      "-password_hash -otp"
+      "-password_hash -otp",
     );
 
     if (!user) {
@@ -212,4 +207,18 @@ export const deleteUser = async (req, res) => {
     console.error("Delete user error:", err.message);
     res.status(500).json({ message: "Unable to delete user." });
   }
+};
+
+// @desc     Logout user
+// @route    POST /api/v1/users/logout
+// @access   Private
+export const logout = (req, res) => {
+  // Clear authentication cookie and redirect to login page
+  res.clearCookie("Authorization", {
+    httpOnly: false,
+    sameSite: "lax",
+    secure: process.env.MODE === "production",
+  });
+
+  return res.redirect("/home");
 };

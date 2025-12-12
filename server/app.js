@@ -2,22 +2,35 @@ import express from "express";
 import cors from "cors";
 import userRoutes from "./routes/user.routes.js";
 import eventRoutes from "./routes/event.routes.js";
+import pageRoutes from "./routes/pages.routes.js";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
+import exphbs from "express-handlebars";
+import cookieParser from "cookie-parser";
 
 const swaggerDocument = YAML.load("./openapi.yaml");
 
 const app = express();
 
-app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+
+app.use(express.static("public"));
 
 // Health check
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "API service is running" });
 });
 
-// Routes
+// Page Routes
+app.use("/", pageRoutes);
+
+// API Routes
+app.use("/api", cors());
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/events", eventRoutes);
 

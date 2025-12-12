@@ -1,0 +1,11 @@
+<div class="protected-container">
+  <h1>Welcome, {{user.username}}</h1>
+
+  <p>This is a protected page.</p>
+
+  <p>Email: {{user.email}}</p>
+
+  <form method="POST" action="/api/v1/users/logout">
+    <button type="submit">Logout</button>
+  </form>
+</div>

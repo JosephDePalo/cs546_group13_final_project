@@ -3,32 +3,42 @@ import User from "../models/user.model.js";
 
 export const protect = async (req, res, next) => {
   try {
-    let token = req.headers.authorization;
+    let token;
 
-    if (!token) {
-      return res.status(401).json({ message: "No token provided." });
+    if (req.cookies?.Authorization) {
+      token = req.cookies.Authorization;
+    } else if (req.headers.authorization) {
+      token = req.headers.authorization;
+      if (token.startsWith("Bearer ")) {
+        token = token.split(" ")[1];
+      }
     }
 
-    // Support for "Bearer <token>" format
-    if (token.startsWith("Bearer ")) {
-      token = token.split(" ")[1];
+    if (!token) {
+      return handleAuthFailure(req, res);
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Fetch user without sensitive fields
     const user = await User.findById(decoded.id).select("-password_hash -otp");
-
     if (!user) {
-      return res.status(404).json({ message: "User does not exist." });
+      return handleAuthFailure(req, res);
     }
 
     req.user = user;
     next();
-  } catch (error) {
-    console.error("Auth error:", error.message);
-    res.status(401).json({ message: "Not authorized." });
+  } catch (err) {
+    console.error("Auth error:", err.message);
+    return handleAuthFailure(req, res);
   }
+};
+
+// Helper: decide redirect vs JSON
+const handleAuthFailure = (req, res) => {
+  if (!req.originalUrl.startsWith("/api")) {
+    return res.redirect("/home");
+  }
+  return res.status(401).json({ message: "Not authorized." });
 };
 
 export const admin = (req, res, next) => {

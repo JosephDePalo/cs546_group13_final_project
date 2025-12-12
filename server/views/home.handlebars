@@ -1,0 +1,23 @@
+<div class="login-page-container">
+  {{#if user}}
+    <h1>Welcome, {{user.username}}</h1>
+
+    <p>You are logged in.</p>
+
+    <a href="/example-protected" class="btn btn-primary">
+      Go to Protected Page
+    </a>
+
+    <form method="POST" action="/api/v1/users/logout">
+      <button type="submit" class="btn btn-secondary">Logout</button>
+    </form>
+  {{else}}
+    <h1>Welcome to Volunteer Forum</h1>
+
+    <p>Find and participate in volunteering events.</p>
+
+    <p>Login to access the forum.</p>
+
+    <a href="/login" class="btn btn-primary">Login</a>
+  {{/if}}
+</div>
