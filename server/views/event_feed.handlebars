@@ -1,0 +1,13 @@
+<h1>Event Feed</h1>
+<a href="/new_event" class="btn btn-primary">New Event</a>
+
+<main class="feed">
+  {{#each events}}
+  <article class="event-post">
+    <a href="/api/v1/events/{{event_id}}">
+      <h3>{{title}}</h3>
+    </a>
+    <a href="/api/v1/users/{{organizer_id}}">{{organizer_id.username}}</a>
+  </article>
+  {{/each}}
+</main>
