@@ -16,3 +16,9 @@ export const exampleProtectedPage = (req, res) => {
     user: req.user.toObject(),
   });
 };
+
+export const renderLogin = (req, res) => {
+  res.render("login", {
+    title: "Login | Volunteer Forum",
+  });
+};

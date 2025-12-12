@@ -1,5 +1,9 @@
 import express from "express";
-import { renderHome, renderRegister } from "../controllers/pages.controller.js";
+import {
+  renderHome,
+  renderRegister,
+  renderLogin,
+} from "../controllers/pages.controller.js";
 import { exampleProtectedPage } from "../controllers/pages.controller.js";
 import { protect, admin } from "../middlewares/auth.middleware.js";
 
@@ -10,6 +14,7 @@ router.get("/home", renderHome);
 router.get("/example-protected", protect, exampleProtectedPage);
 
 router.get("/register", renderRegister);
+router.get("/login", renderLogin);
 
 // EXAMPLE PROTECTED PAGE
 // router.get("/profile" , protect, renderProfile)
