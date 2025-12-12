@@ -31,6 +31,5 @@
     "prettier": "^3.6.2"
   },
   "dependencies": {
-    "express-handlebars": "^8.0.4"
   }
 }
