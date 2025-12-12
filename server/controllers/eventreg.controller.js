@@ -7,7 +7,7 @@ export const newEventRegistration = async (req, res) => {
     try {
         const {user_id, event_id} = req.body;
         let current_date = new Date();
-        const existingEventReg = await EventRegistration.findOne({title});
+        const existingEventReg = await EventRegistration.findOne({user_id});
     if (existingEventReg) {
       return res.status(400).json({
         message:
@@ -50,7 +50,7 @@ export const getEventRegistration = async (req, res) => {
 
 export const getAllEventRegistrations = async (req, res) => {
   try {
-    const eventRegs = await Report.find();
+    const eventRegs = await EventRegistration.find();
     res.json(eventRegs);
   } catch (err) {
     console.error("Get all event registrations error:", err.message);
@@ -97,7 +97,7 @@ export const deleteEventReg = async (req, res) => {
             return res.status(404).json({ message: "EventRegistration not found." });
         }
     
-        await EventRegistration.deleteOne();
+        await eventReg.deleteOne();
     
         res.json(eventReg);
     } catch (err) {
@@ -131,4 +131,5 @@ export const cancelEventReg = async (req, res) => {
         res.status(500).json({ message: "Unable to update event registration." });
     }
 }
+
 
