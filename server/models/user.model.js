@@ -172,11 +172,12 @@ userSchema.pre("save", async function (next) {
 
 userSchema.statics.getTopUsers = function (limit = 10) {
   return this.find({
-    disabled: false,
+    is_active: true,
   })
     .sort({ "account_stats.points": -1 })
     .limit(limit)
-    .project({ password_hash: 0, otp: 0 });
+    .select("-password_hash -otp")
+    .lean();
 };
 
 const User = mongoose.model("User", userSchema);
