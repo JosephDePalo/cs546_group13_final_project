@@ -29,7 +29,7 @@ export const newEvent = async (req, res) => {
       max_capacity,
     });
 
-    res.json(event);
+    res.redirect(`/api/v1/events/${event._id}`);
   } catch (err) {
     console.error("New event error:", err.message);
     res.status(500).json({ message: "Internal server error." });

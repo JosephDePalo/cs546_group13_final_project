@@ -60,8 +60,8 @@ const eventSchema = new mongoose.Schema(
       minlength: [5, "Invalid title length: min 5 chars"],
       maxlength: [50, "Invalid title length: max 50 chars"],
       match: [
-        /^[a-zA-Z0-9_-]+$/,
-        "Invalid title format: Only letters, numbers, _, and - allowed",
+        /^[a-zA-Z0-9_-\s]+$/,
+        "Invalid title format: Only letters, numbers, spaces, _, and - allowed",
       ],
       description: "Displayed title of an event.",
     },
@@ -104,14 +104,14 @@ const eventSchema = new mongoose.Schema(
       required: [true, "Field: end_time is required and cannot be null"],
       validate: {
         validator: function (dt) {
-          if (this.start_time) {
+          if (!this.start_time) {
             return false;
           }
 
           // 30 minutes in milliseconds
           const thirty_minutes = 1800000;
 
-          return dt >= this.start_time + thirty_minutes;
+          return dt >= this.start_time.getTime() + thirty_minutes;
         },
         message:
           "Invalid end_time: Must be at least 30 minutes after start_time",

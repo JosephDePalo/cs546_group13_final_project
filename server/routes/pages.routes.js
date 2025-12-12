@@ -2,8 +2,13 @@ import express from "express";
 import {
   renderHome,
   renderRegister,
+<<<<<<< HEAD
   renderLogin,
   renderLeaderboard,
+=======
+  renderNewEvent,
+  renderEventManagement,
+>>>>>>> 7faa5e3 (add logic for new event page and some html for event management page)
 } from "../controllers/pages.controller.js";
 import { exampleProtectedPage } from "../controllers/pages.controller.js";
 import { protect, admin } from "../middlewares/auth.middleware.js";
@@ -18,6 +23,10 @@ router.get("/register", renderRegister);
 router.get("/login", renderLogin);
 
 router.get("/leaderboard", renderLeaderboard);
+
+router.get("/event/new_event", renderNewEvent);
+
+router.get("/event/manage/:id", renderEventManagement);
 
 // EXAMPLE PROTECTED PAGE
 // router.get("/profile" , protect, renderProfile)

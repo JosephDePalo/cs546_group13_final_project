@@ -1,6 +1,5 @@
 <h1>Event Management - {{title}}</h1>
 
-
 <form id="overview-edit-form" name="overview-edit-form" action="/api/v1/events/{{_id}}?_method=PUT" method="POST">
 
   <h2>Overview</h2>
@@ -17,12 +16,12 @@
 
   <div class="form-item">
     <label for="start_time">Start Time</label>
-    <input type="text" id="start_time" name="start_time" value="{{formatted_start_time}}">
+    <input type="datetime-local" id="start_time" name="start_time" value="{{formatted_start_time}}">
   </div>
 
   <div class="form-item">
     <label for="end_time">End Time</label>
-    <input type="text" id="end_time" name="end_time" value="{{formatted_end_time}}">
+    <input type="datetime-local" id="end_time" name="end_time" value="{{formatted_end_time}}">
   </div>
 
   <div class="form-item">
@@ -52,5 +51,9 @@
     <input type="text" id="location_url" name="location_url" value="{{location_url}}">
   </div>
 
-
+  <div class="form-item">
+    <button type="submit" id="submit_button" name="submit_button">Update Event</button>
+  </div>
 </form>
+
+<a href="/api/v1/events/{{_id}}" class="btn btn-primary">Return to Event Details</a>
