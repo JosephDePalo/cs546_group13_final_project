@@ -11,7 +11,7 @@ export const createComment = async (req, res) => {
     // Validate necessary fields
     if (!event_id || !content) {
       return res.status(400).json({
-        success: false,
+
         message: 'EventId and content required'
       });
     }
@@ -20,7 +20,7 @@ export const createComment = async (req, res) => {
     const event = await Event.findById(event_id);
     if (!event) {
       return res.status(404).json({
-        success: false,
+
         message: 'Event does not exist.'
       });
     }
@@ -33,14 +33,14 @@ export const createComment = async (req, res) => {
       parentComment = await Comment.findById(parent_comment_id);
       if (!parentComment) {
         return res.status(404).json({
-          success: false,
+
           message: 'Parent comment does not exist'
         });
       }
 
       if (parentComment.disabled) {
         return res.status(400).json({
-          success: false,
+
           message: 'Unable to reply to disabled comments'
         });
       }
@@ -48,7 +48,7 @@ export const createComment = async (req, res) => {
       // Make sure the replies are to comments from the same event.
       if (parentComment.event_id.toString() !== event_id) {
         return res.status(400).json({
-          success: false,
+
           message: 'You can only reply to comments from the same event.'
         });
       }
@@ -76,14 +76,14 @@ export const createComment = async (req, res) => {
     });
 
     res.status(201).json({
-      success: true,
+
       message: parent_comment_id ? 'Reply successful' : 'Comment successful',
       data: populatedComment
     });
   } catch (error) {
     console.error('Create comment error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Comment creation failed',
       error: error.message
     });
@@ -94,7 +94,7 @@ export const createComment = async (req, res) => {
 export const getEventComments = async (req, res) => {
   try {
     const { event_id } = req.params;
-    const { page = 1, limit = 20, include_replies = false } = req.query;
+    const { page = 1, limit = 20, include_replies = true } = req.query;
 
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
@@ -103,7 +103,7 @@ export const getEventComments = async (req, res) => {
     const event = await Event.findById(event_id);
     if (!event) {
       return res.status(404).json({
-        success: false,
+
         message: 'Event does not exist'
       });
     }
@@ -133,7 +133,7 @@ export const getEventComments = async (req, res) => {
     }
 
     res.json({
-      success: true,
+
       data: commentsWithReplies,
       pagination: {
         page: pageNum,
@@ -145,7 +145,7 @@ export const getEventComments = async (req, res) => {
   } catch (error) {
     console.error('Get event comments error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Failed to retrieve comment list',
       error: error.message
     });
@@ -164,14 +164,14 @@ export const getCommentById = async (req, res) => {
 
     if (!comment) {
       return res.status(404).json({
-        success: false,
+
         message: 'Comment does not exist'
       });
     }
 
     if (comment.disabled && !req.user.is_admin) {
       return res.status(403).json({
-        success: false,
+
         message: 'Comment has been disabled.'
       });
     }
@@ -180,7 +180,7 @@ export const getCommentById = async (req, res) => {
     const replies = await Comment.getCommentReplies(comment_id, 1, 50);
 
     res.json({
-      success: true,
+
       data: {
         ...comment.toObject(),
         replies: replies,
@@ -190,7 +190,7 @@ export const getCommentById = async (req, res) => {
   } catch (error) {
     console.error('Get comment by id error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Failed to retrieve comment details',
       error: error.message
     });
@@ -210,7 +210,7 @@ export const getCommentReplies = async (req, res) => {
     const parentComment = await Comment.findById(comment_id);
     if (!parentComment) {
       return res.status(404).json({
-        success: false,
+
         message: 'Comment does not exist'
       });
     }
@@ -222,7 +222,7 @@ export const getCommentReplies = async (req, res) => {
     });
 
     res.json({
-      success: true,
+
       data: replies,
       pagination: {
         page: pageNum,
@@ -234,7 +234,7 @@ export const getCommentReplies = async (req, res) => {
   } catch (error) {
     console.error('Get comment replies error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Failed to retrieve reply list',
       error: error.message
     });
@@ -255,7 +255,7 @@ export const deleteComment = async (req, res) => {
 
     if (!comment) {
       return res.status(404).json({
-        success: false,
+
         message: 'Comments do not exist'
       });
     }
@@ -270,7 +270,7 @@ export const deleteComment = async (req, res) => {
 
       if (replyCount > 0) {
         return res.status(400).json({
-          success: false,
+
           message: 'This comment has already been replied to and cannot be deleted.'
         });
       }
@@ -284,13 +284,13 @@ export const deleteComment = async (req, res) => {
     });
 
     res.json({
-      success: true,
+
       message: 'Comment deleted successfully'
     });
   } catch (error) {
     console.error('Delete comment error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Comment deletion failed',
       error: error.message
     });
@@ -306,14 +306,14 @@ export const reportComment = async (req, res) => {
 
     if (!comment) {
       return res.status(404).json({
-        success: false,
+
         message: 'Comment does not exist'
       });
     }
 
     if (comment.disabled) {
       return res.status(400).json({
-        success: false,
+
         message: 'Comments are disabled; reporting is not possible.'
       });
     }
@@ -322,7 +322,7 @@ export const reportComment = async (req, res) => {
     await comment.incrementReportCount();
 
     res.json({
-      success: true,
+
       message: 'Report successful',
       data: {
         comment_id: comment._id,
@@ -332,7 +332,7 @@ export const reportComment = async (req, res) => {
   } catch (error) {
     console.error('Report comment error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Failed to report comment',
       error: error.message
     });
@@ -355,7 +355,7 @@ export const getUserComments = async (req, res) => {
     });
 
     res.json({
-      success: true,
+
       data: comments,
       pagination: {
         page: pageNum,
@@ -367,9 +367,10 @@ export const getUserComments = async (req, res) => {
   } catch (error) {
     console.error('Get user comments error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Failed to retrieve user comments',
       error: error.message
     });
   }
+
 };
