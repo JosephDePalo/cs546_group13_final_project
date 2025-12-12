@@ -14,8 +14,7 @@ export const newReport = async (req, res) => {
             target_id,
             reason,
             description, 
-            severity,
-            created_at: current_date
+            severity
         });
 
         res.json(report);
@@ -80,18 +79,6 @@ export const updateReport = async (req, res) => {
         if (!updatedReport) {
             return res.status(404).json({ message: "Report not found." });
         }
-
-        let current_date = new Date();
-
-        const updatedReport2 = await Report.findByIdAndUpdate(req.params.id, {updated_at: current_date}, {
-            new: true,
-        });
-
-        if (!updatedReport2) {
-            return res.status(404).json({ message: "Report not found." });
-        }
-
-        res.json(updatedReport2);
     } catch (err) {
         console.error("Update report error:", err.message);
         res.status(500).json({ message: "Unable to update report." });
@@ -148,8 +135,11 @@ export const resolveReport = async (req, res) => {
             return res.status(404).json({ message: "Report not found." });
         }
 
+        res.json(resolvedReport);
+
     } catch (err) {
         console.error("Resolve report error:", err.message);
         res.status(500).json({ message: "Unable to resolve report" });
     }
 }
+
