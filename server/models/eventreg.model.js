@@ -17,7 +17,7 @@ const eventRegSchema = new mongoose.Schema(
         },
         registered_at: {
             type: Date,
-            default: null,
+            default: Date.now,
             description: "Timestamp of registration."
         },
         attended: {
@@ -48,5 +48,11 @@ const eventRegSchema = new mongoose.Schema(
     },
 )
 
+eventRegSchema.index(
+    {user_id: 1, event_id: 1},
+    {unique: true}
+);
+
 const EventRegistration = mongoose.model("EventRegistration", eventRegSchema);
 export default EventRegistration;
+
