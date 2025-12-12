@@ -3,7 +3,7 @@ import EventRegistration from "../models/eventreg.model.js";
 // @desc     Create new EventRegistration
 // @access   Public
 
-export const newEventRegistation = async (req, res) => {
+export const newEventRegistration = async (req, res) => {
     try {
         const {user_id, event_id} = req.body;
         let current_date = new Date();
@@ -131,3 +131,4 @@ export const cancelEventReg = async (req, res) => {
         res.status(500).json({ message: "Unable to update event registration." });
     }
 }
+
