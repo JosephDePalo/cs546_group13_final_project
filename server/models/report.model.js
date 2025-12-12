@@ -13,13 +13,13 @@ const reportSchema = new mongoose.Schema(
             required: [true, "Field: target_type is required and cannot be null"],
             type: String,
             trim: true,
+            enum: ["Event", "Comment", "User"],
             description: "event | comment| user"
         },
         target_id: {
             required: [true, "Field: target_id is required and cannot be null"],
             type: ObjectId,
-            ref: "Events",
-            description: "id of the event being reported"
+            description: "id of the event/comment/user being reported"
         },
         reason: {
             required: [true, "Field: reason is required and cannot be null"],
@@ -39,12 +39,14 @@ const reportSchema = new mongoose.Schema(
             required: [true, "Field: severity is required and cannot be null"],
             type: String,
             trim: true,
+            enum: ["High", "Medium", "Low"],
             description: "High | Medium | Low"
         },
 
         resolution_status: {
             type: String,
             default: "pending",
+            enum: ["Pending", "Reviewed", "Dismissed"],
             description: "Pending, reviewed, dismissed"
         },
 
@@ -55,7 +57,7 @@ const reportSchema = new mongoose.Schema(
             description: "id of the admin who handled the report"
         },
 
-        reponding_admin_notes: {
+        responding_admin_notes: {
             type: String,
             default: null,
             trim: true,
@@ -66,6 +68,7 @@ const reportSchema = new mongoose.Schema(
         resolution_decision: {
             type: String,
             default: null,
+            enum: ["Warned", "Resolved", "Target_Redacted"];
             description: "Warned | Resolved || targed_redacted "
         },
         
@@ -73,18 +76,6 @@ const reportSchema = new mongoose.Schema(
             type: Date,
             default: null,
             description: "Timestamp of when the report was marked as resolved."
-        },
-
-        created_at: {
-            type: Date,
-            default: null,
-            description: "Timestamp of when the report was created."
-        },
-
-        updated_at: {
-            type: Date,
-            default: null,
-            description: "Timestamp of when the report was updated."
         }
     },
     {
@@ -92,5 +83,11 @@ const reportSchema = new mongoose.Schema(
     },
 )
 
+reportSchema.index(
+    reporter_id: 1, target_type: 1, target_id: 1},
+    {unique: true}
+);
+
 const Report = mongoose.model("Report", reportSchema);
 export default Report;
+
