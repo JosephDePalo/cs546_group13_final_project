@@ -24,7 +24,7 @@ export const login = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
     });
 
-    // ✅ Redirect to protected page after successful login
+    // Redirect to protected page after successful login
     return res.redirect("/example-protected");
   } catch (err) {
     console.error("Login error:", err.message);
