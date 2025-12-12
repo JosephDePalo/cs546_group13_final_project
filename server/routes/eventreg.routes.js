@@ -22,7 +22,7 @@ router
 // Get Event Registration by id | update Event Registration | Delete Event Registration
 
 router
-    .route("events/register/:id")
+    .route("/events/register/:id")
     .get(getEventRegistration)
     .put(protect, updateEventRegistration)
     .delete(protect, deleteEventReg);
@@ -30,8 +30,9 @@ router
 // Cancel Event Registration
 
 router
-    .route("events/register/cancel/:id")
+    .route("/events/register/cancel/:id")
     .put(protect, admin, cancelEventReg);
+
 
 
 export default router
