@@ -62,14 +62,7 @@ export const register = async (req, res) => {
     delete safeUser.password_hash;
     delete safeUser.otp;
 
-    res.json({
-      user: {
-        username: user.username,
-        email: user.email,
-        is_admin: user.is_admin,
-      },
-      token: generateToken(user._id),
-    });
+    res.redirect("/login");
   } catch (err) {
     console.error("Register error:", err.message);
     res.status(500).json({ message: "Unable to create user." });
