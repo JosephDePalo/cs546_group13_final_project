@@ -1,0 +1,25 @@
+{{! Create Report | Update Report}}
+<h1> {{title}} </h1>
+
+<form action="/reports" method="POST" class="form">
+    <label>
+        Report Reason
+        <input type="text" name="reason" placeholder="Enter Reason" value="{{reason}}" class="full-width-input">
+    </label>
+    <label>
+        Report Description
+        <input type="text" name="description" placeholder="Enter Description" value="{{description}}" class="full-width-input">
+    </label>
+    <label>
+        {{! Drop Down with fields High | Medium | Low }}
+        Severity
+        <select name="severity" class="full-width-input">
+            <option value="High"> High </option>
+            <option value="Medium"> Medium </option>
+            <option value="Low"> Low </option>
+        </select>
+    </label>
+
+    <button type="submit" id="submit-button">Submit Report</button>
+    <button type="reset">Clear Form</button>
+</form>
