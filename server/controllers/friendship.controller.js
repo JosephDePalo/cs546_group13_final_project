@@ -19,21 +19,22 @@ export const sendFriendRequest = async (req, res) => {
       .populate('friend_id', 'username email profile_picture_url');
 
     res.status(201).json({
-      success: true,
+
       message: 'Friend request sent successfully',
       data: populatedFriendship
     });
   } catch (error) {
+    // duplicate key error
     if (error.code === 11000) {
       return res.status(400).json({
-        success: false,
+
         message: 'A friendship already exists'
       });
     }
 
     console.error('Send friend request error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Friend request failed to send',
       error: error.message
     });
@@ -53,14 +54,14 @@ export const acceptFriendRequest = async (req, res) => {
       .populate('friend_id', 'username email profile_picture_url');
 
     res.json({
-      success: true,
+
       message: 'Friend request accepted',
       data: updatedFriendship
     });
   } catch (error) {
     console.error('Accept friend request error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Friend request failed to be accepted',
       error: error.message
     });
@@ -75,14 +76,14 @@ export const rejectFriendRequest = async (req, res) => {
     await friendship.reject();
 
     res.json({
-      success: true,
+
       message: 'Friend request rejected',
       data: friendship
     });
   } catch (error) {
     console.error('Reject friend request error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Failed to reject friend request',
       error: error.message
     });
@@ -135,7 +136,7 @@ export const getFriends = async (req, res) => {
     });
 
     res.json({
-      success: true,
+
       data: formattedFriendships,
       pagination: {
         page: parseInt(page),
@@ -147,7 +148,7 @@ export const getFriends = async (req, res) => {
   } catch (error) {
     console.error('Get friends error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Failed to retrieve friend list',
       error: error.message
     });
@@ -177,7 +178,7 @@ export const getPendingRequests = async (req, res) => {
     });
 
     res.json({
-      success: true,
+
       data: requests,
       pagination: {
         page: parseInt(page),
@@ -189,7 +190,7 @@ export const getPendingRequests = async (req, res) => {
   } catch (error) {
     console.error('Get pending requests error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Friend request failed',
       error: error.message
     });
@@ -219,7 +220,7 @@ export const getSentRequests = async (req, res) => {
     });
 
     res.json({
-      success: true,
+
       data: requests,
       pagination: {
         page: parseInt(page),
@@ -231,7 +232,7 @@ export const getSentRequests = async (req, res) => {
   } catch (error) {
     console.error('Get sent requests error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Failed to retrieve sent request',
       error: error.message
     });
@@ -248,7 +249,7 @@ export const checkFriendshipStatus = async (req, res) => {
 
     if (!friendship) {
       return res.json({
-        success: true,
+
         data: {
           is_friend: false,
           status: 'none',
@@ -258,7 +259,7 @@ export const checkFriendshipStatus = async (req, res) => {
     }
 
     res.json({
-      success: true,
+
       data: {
         is_friend: friendship.status === 'accepted',
         status: friendship.status,
@@ -272,7 +273,7 @@ export const checkFriendshipStatus = async (req, res) => {
   } catch (error) {
     console.error('Check friendship status error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Friendship status check failed',
       error: error.message
     });
@@ -287,13 +288,13 @@ export const removeFriend = async (req, res) => {
     await Friendship.findByIdAndDelete(friendship_id);
 
     res.json({
-      success: true,
+
       message: 'Friend relationship deleted'
     });
   } catch (error) {
     console.error('Remove friend error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Friend deletion failed',
       error: error.message
     });
@@ -308,15 +309,16 @@ export const cancelFriendRequest = async (req, res) => {
     await Friendship.findByIdAndDelete(friendship_id);
 
     res.json({
-      success: true,
+
       message: 'Friend request canceled'
     });
   } catch (error) {
     console.error('Cancel friend request error:', error);
     res.status(500).json({
-      success: false,
+
       message: 'Cancel friend request failed',
       error: error.message
     });
   }
+
 };
