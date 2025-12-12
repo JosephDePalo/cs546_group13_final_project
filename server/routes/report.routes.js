@@ -12,31 +12,37 @@ import {protect, admin} from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// Get all reports | create new report
+// Create new report
 
 router
     .route("/reports")
-    .get(getAllReports)
     .post(protect, newReport);
 
-// Get report by reportId | update report | delete report
+// Get report by reportId | update report | delete report (admin priviledges only)
 
 router
     .route("/reports/:id")
-    .get(getReport)
+    .get(protect, admin, getReport)
     .put(protect, admin, updateReport)
     .delete(protect, admin, deleteReport);
 
-// Get all reports for specified eventId
+// Get all reports (admin priviledges only)
 
 router
-    .route("/reports/:eventid")
-    .get(getReport);
+    .route("/reports/admin")
+    .get(protect, admin, getAllReports);
 
-// Resolve a report
+// Get all reports for specified eventId (admin priviledges only)
+
+router
+    .route("/reports/admin/:eventid")
+    .get(protect, admin, getReport);
+
+// Resolve a report(admin priviledges only)
 
 router
     .route("/reports/resolve/:id")
     .put(protect, admin, resolveReport);
+
 
 export default router
