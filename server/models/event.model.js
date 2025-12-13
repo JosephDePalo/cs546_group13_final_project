@@ -49,7 +49,7 @@ const eventSchema = new mongoose.Schema(
     organizer_id: {
       required: [true, "Field: organizer_id is required and cannot be null"],
       type: ObjectId,
-      ref: "Users",
+      ref: "User",
       description: "ID of the event organizer.",
     },
 

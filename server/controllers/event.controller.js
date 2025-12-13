@@ -86,8 +86,22 @@ export const getEvent = async (req, res) => {
 
 export const getEvents = async (req, res) => {
   try {
-    const events = await Event.find();
-    res.json(events);
+    const { page = 1, limit = 20 } = req.query;
+    const events = await Event.getEvents(page, limit).lean();
+    const eventCount = await Event.countDocuments();
+    const pageCount = Math.ceil(eventCount / limit);
+    res.render("event_feed", {
+      events,
+      title: "Event Feed | Volunteer Forum",
+      page_details: {
+        is_next_page: pageCount > page,
+        next_page: parseInt(page) + 1,
+        is_prev_page: page != 1,
+        prev_page: parseInt(page) - 1,
+        current_page: page,
+        page_limit: limit,
+      },
+    });
   } catch (err) {
     console.error("Get events error:", err.message);
     res.status(500).json({ message: "Unable to fetch events." });
