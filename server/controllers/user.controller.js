@@ -24,7 +24,7 @@ export const login = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
     });
 
-    return res.redirect("/feed");
+    return res.redirect("/api/v1/events");
   } catch (err) {
     console.error("Login error:", err.message);
     return res.status(500).json({
@@ -168,18 +168,45 @@ export const getUsers = async (req, res) => {
 // @access   Private/Admin
 export const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select(
-      "-password_hash -otp",
-    );
+    const user = await User.findById(req.params.id)
+      .select("-password_hash -otp")
+      .lean();
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
 
-    res.json(user);
+    res.render("user_profile", {
+      title: `${user.username} | Volunteer Forum`,
+      ...user,
+    });
   } catch (err) {
     console.error("Get user error:", err.message);
     res.status(500).json({ message: "Unable to fetch user." });
+  }
+};
+
+export const updateUserById = async (req, res) => {
+  try {
+    let updates = req.body;
+
+    delete updates._id;
+    delete updates.is_admin;
+    delete updates.account_stats;
+    delete updates.password;
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+    }).select("-password_hash -otp");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.redirect(`/api/v1/users/${req.params.id}`);
+  } catch (err) {
+    console.error("Profile update error:", err.message);
+    res.status(500).json({ message: "Unable to update profile." });
   }
 };
 

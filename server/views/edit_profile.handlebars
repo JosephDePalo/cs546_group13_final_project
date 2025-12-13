@@ -1,0 +1,90 @@
+<h1>Edit Profile - {{username}}</h1>
+
+<form id="user-edit-form" name="user-edit-form" action="/api/v1/users/{{_id}}?_method=PUT" method="POST">
+
+  <h2>Basic Info</h2>
+
+  <div class="form-item">
+    <label for="first_name">First Name</label>
+    <input type="text" id="first_name" name="first_name" value="{{first_name}}">
+  </div>
+
+  <div class="form-item">
+    <label for="last_name">Last Name</label>
+    <input type="text" id="last_name" name="last_name" value="{{last_name}}">
+  </div>
+
+  <div class="form-item">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" value="{{email}}">
+  </div>
+
+  <div class="form-item">
+    <label for="phone">Phone</label>
+    <input type="text" id="phone" name="phone" value="{{phone}}">
+  </div>
+
+  <div class="form-item">
+    <label for="gender">Gender</label>
+    <select id="gender" name="gender">
+      <option value="" {{#unless gender}}selected{{/unless}}>Select</option>
+      <option value="Male" {{#if (eq gender "Male" )}}selected{{/if}}>Male</option>
+      <option value="Female" {{#if (eq gender "Female" )}}selected{{/if}}>Female</option>
+      <option value="Other" {{#if (eq gender "Other" )}}selected{{/if}}>Other</option>
+    </select>
+  </div>
+
+  <div class="form-item">
+    <label for="age">Age</label>
+    <input type="number" id="age" name="age" value="{{age}}">
+  </div>
+
+  <div class="form-item">
+    <label for="city">City</label>
+    <input type="text" id="city" name="city" value="{{city}}">
+  </div>
+
+  <div class="form-item">
+    <label for="state">State</label>
+    <input type="text" id="state" name="state" value="{{state}}">
+  </div>
+
+  <h2>Account Stats</h2>
+
+  <div class="form-item">
+    <label>Points</label>
+    <input type="number" value="{{account_stats.points}}" readonly>
+  </div>
+
+  <div class="form-item">
+    <label>Rank</label>
+    <input type="text" value="{{account_stats.rank}}" readonly>
+  </div>
+
+  <div class="form-item">
+    <label>Events Attended</label>
+    <input type="number" value="{{account_stats.events_attended_count}}" readonly>
+  </div>
+
+  <div class="form-item">
+    <label>Events Organized</label>
+    <input type="number" value="{{account_stats.events_organized}}" readonly>
+  </div>
+
+  <div class="form-item">
+    <label>Friends</label>
+    <input type="number" value="{{account_stats.friends_count}}" readonly>
+  </div>
+
+  <div class="form-item">
+    <label>Comments</label>
+    <input type="number" value="{{account_stats.comments_count}}" readonly>
+  </div>
+
+  <div class="form-item">
+    <button type="submit" id="submit_button" name="submit_button">Update Profile</button>
+  </div>
+
+</form>
+
+<a href="/api/v1/users/{{_id}}" class="btn btn-primary">Return to Profile</a>

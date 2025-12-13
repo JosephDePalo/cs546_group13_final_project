@@ -59,3 +59,11 @@ export const renderEventManagement = async (req, res) => {
     res.status(404).json({ error: "event does not exist" });
   }
 };
+
+export const renderEditProfile = async (req, res) => {
+  let user = await User.findById(req.params.id).lean();
+  res.render("edit_profile", {
+    title: "Edit Profile | Volunteer Forum",
+    ...user,
+  });
+};
