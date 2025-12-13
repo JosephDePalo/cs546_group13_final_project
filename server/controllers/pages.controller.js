@@ -4,6 +4,12 @@ export const renderHome = (req, res) => {
   });
 };
 
+export const renderRegister = (req, res) => {
+  res.render("register", {
+    title: "Register | Volunteer Forum",
+  });
+};
+
 export const exampleProtectedPage = (req, res) => {
   res.render("exampleProtectedPage", {
     title: "Protected Page",

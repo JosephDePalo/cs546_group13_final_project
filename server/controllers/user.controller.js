@@ -55,21 +55,14 @@ export const register = async (req, res) => {
       username,
       email,
       password_hash: password,
-      is_admin: is_admin,
+      is_admin: Boolean(is_admin),
     });
 
     const safeUser = user.toObject();
     delete safeUser.password_hash;
     delete safeUser.otp;
 
-    res.json({
-      user: {
-        username: user.username,
-        email: user.email,
-        is_admin: user.is_admin,
-      },
-      token: generateToken(user._id),
-    });
+    res.redirect("/login");
   } catch (err) {
     console.error("Register error:", err.message);
     res.status(500).json({ message: "Unable to create user." });
