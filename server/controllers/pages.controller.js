@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import Event from "../models/event.model.js";
+import { formatDateTimeLocal } from "../helpers.js";
 
 export const renderHome = (req, res) => {
   res.render("home", {
@@ -41,13 +42,17 @@ export const renderNewEvent = (req, res) => {
   });
 };
 
-export const renderEventManagement = (req, res) => {
+export const renderEventManagement = async (req, res) => {
   try {
-    const event = Event.findById(req.params.id);
+    let event = await Event.findById(req.params.id).lean();
+    const formatted_start_time = formatDateTimeLocal(event.start_time);
+    const formatted_end_time = formatDateTimeLocal(event.end_time);
 
     res.render("event_management", {
       title: "Event Management | Volunteer Forum",
       ...event,
+      formatted_start_time,
+      formatted_end_time,
     });
   } catch (err) {
     console.error("renderEventManagement error: " + err.message);

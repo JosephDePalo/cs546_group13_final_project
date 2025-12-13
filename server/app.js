@@ -7,6 +7,7 @@ import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import exphbs from "express-handlebars";
 import cookieParser from "cookie-parser";
+import MethodOverride from "method-override";
 
 const swaggerDocument = YAML.load("./openapi.yaml");
 
@@ -20,6 +21,7 @@ app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 app.use(express.static("public"));
+app.use(MethodOverride("_method"));
 
 // Health check
 app.get("/health", (req, res) => {
