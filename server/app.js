@@ -13,11 +13,18 @@ const swaggerDocument = YAML.load("./openapi.yaml");
 
 const app = express();
 
+const hbs = exphbs.create({
+  defaultLayout: "main",
+  helpers: {
+    eq: (x, y) => x === y,
+  },
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
+app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 
 app.use(express.static("public"));

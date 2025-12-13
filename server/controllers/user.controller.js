@@ -186,6 +186,30 @@ export const getUserById = async (req, res) => {
   }
 };
 
+export const updateUserById = async (req, res) => {
+  try {
+    let updates = req.body;
+
+    delete updates._id;
+    delete updates.is_admin;
+    delete updates.account_stats;
+    delete updates.password;
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+    }).select("-password_hash -otp");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.redirect(`/api/v1/users/${req.params.id}`);
+  } catch (err) {
+    console.error("Profile update error:", err.message);
+    res.status(500).json({ message: "Unable to update profile." });
+  }
+};
+
 // @desc     Delete user (admin)
 // @route    DELETE /api/users/:id
 // @access   Private/Admin
