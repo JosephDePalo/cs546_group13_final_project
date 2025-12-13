@@ -1,5 +1,5 @@
 import Event from "../models/event.model.js";
-import { formatDateTimeLocal } from "../helpers.js";
+import { formatDateTimeLocal } from "../utils/helpers.js";
 
 // @desc     Create new event
 // @route    POST /api/events

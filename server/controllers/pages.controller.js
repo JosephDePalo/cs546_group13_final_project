@@ -1,6 +1,6 @@
 import User from "../models/user.model.js";
 import Event from "../models/event.model.js";
-import { formatDateTimeLocal } from "../helpers.js";
+import { formatDateTimeLocal } from "../utils/helpers.js";
 
 export const renderHome = (req, res) => {
   res.render("home", {
