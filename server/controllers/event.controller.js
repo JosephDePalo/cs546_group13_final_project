@@ -6,7 +6,17 @@ import { formatDateTimeLocal } from "../utils/helpers.js";
 // @access   Private
 export const newEvent = async (req, res) => {
   try {
-    const { title, start_time, end_time, max_capacity } = req.body;
+    const {
+      title,
+      description,
+      location_url,
+      start_time,
+      end_time,
+      max_capacity,
+      address,
+      city,
+      state,
+    } = req.body;
 
     const eventExists = await Event.findOne({
       $and: [
@@ -25,10 +35,16 @@ export const newEvent = async (req, res) => {
     const event = await Event.create({
       organizer_id: req.user._id,
       title,
+      description,
+      location_url,
       start_time,
       end_time,
       max_capacity,
+      address,
+      city,
+      state,
     });
+    console.log(event);
 
     res.redirect(`/api/v1/events/${event._id}`);
   } catch (err) {
