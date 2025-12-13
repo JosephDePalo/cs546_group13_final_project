@@ -1,7 +1,7 @@
 {{! Create Report | Update Report}}
 <h1> {{title}} </h1>
 
-<form action="/reports" method="POST" class="form">
+<form id="report-form" action="/reports" method="POST" class="form">
     <label>
         Report Reason
         <input type="text" name="reason" placeholder="Enter Reason" value="{{reason}}" class="full-width-input">
@@ -22,4 +22,5 @@
 
     <button type="submit" id="submit-button">Submit Report</button>
     <button type="reset">Clear Form</button>
+
 </form>
