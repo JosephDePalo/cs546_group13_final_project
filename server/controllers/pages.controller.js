@@ -1,4 +1,6 @@
 import User from "../models/user.model.js";
+import Event from "../models/event.model.js";
+import { formatDateTimeLocal } from "../utils/helpers.js";
 
 export const renderHome = (req, res) => {
   res.render("home", {
@@ -32,4 +34,28 @@ export const renderLeaderboard = async (req, res) => {
     title: "Leaderboard | Volunteer Forum",
     users: top_users,
   });
+};
+
+export const renderNewEvent = (req, res) => {
+  res.render("new_event", {
+    title: "New Event | Volunteer Forum",
+  });
+};
+
+export const renderEventManagement = async (req, res) => {
+  try {
+    let event = await Event.findById(req.params.id).lean();
+    const formatted_start_time = formatDateTimeLocal(event.start_time);
+    const formatted_end_time = formatDateTimeLocal(event.end_time);
+
+    res.render("event_management", {
+      title: "Event Management | Volunteer Forum",
+      ...event,
+      formatted_start_time,
+      formatted_end_time,
+    });
+  } catch (err) {
+    console.error("renderEventManagement error: " + err.message);
+    res.status(404).json({ error: "event does not exist" });
+  }
 };

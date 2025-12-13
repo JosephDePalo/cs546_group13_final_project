@@ -4,6 +4,8 @@ import {
   renderRegister,
   renderLogin,
   renderLeaderboard,
+  renderNewEvent,
+  renderEventManagement,
 } from "../controllers/pages.controller.js";
 import { exampleProtectedPage } from "../controllers/pages.controller.js";
 import { protect, admin } from "../middlewares/auth.middleware.js";
@@ -18,6 +20,10 @@ router.get("/register", renderRegister);
 router.get("/login", renderLogin);
 
 router.get("/leaderboard", renderLeaderboard);
+
+router.get("/event/new_event", renderNewEvent);
+
+router.get("/event/manage/:id", renderEventManagement);
 
 // EXAMPLE PROTECTED PAGE
 // router.get("/profile" , protect, renderProfile)
