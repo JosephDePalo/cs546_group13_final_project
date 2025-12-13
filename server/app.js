@@ -8,6 +8,8 @@ import YAML from "yamljs";
 import exphbs from "express-handlebars";
 import cookieParser from "cookie-parser";
 import MethodOverride from "method-override";
+import User from "./models/user.model.js";
+import jwt from "jsonwebtoken";
 
 const swaggerDocument = YAML.load("./openapi.yaml");
 
@@ -29,6 +31,24 @@ app.set("view engine", "handlebars");
 
 app.use(express.static("public"));
 app.use(MethodOverride("_method"));
+
+app.use("/", async (req, res, next) => {
+  const token = req.cookies?.Authorization;
+
+  if (!token) {
+    req.user = null;
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = await User.findById(decoded.id).select("-password_hash -otp");
+  } catch (err) {
+    req.user = null;
+  }
+  next();
+});
 
 // Health check
 app.get("/health", (req, res) => {

@@ -13,6 +13,8 @@ import { protect, admin } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
+router.get("/", (req, res) => res.redirect("/home"));
+
 router.get("/home", renderHome);
 
 router.get("/example-protected", protect, exampleProtectedPage);

@@ -24,7 +24,7 @@ const eventStatsSchema = new mongoose.Schema(
         },
         message: "Invalid checked_in_count: Must be an integer",
       },
-      description: "The number of people currently registered for an event.",
+      description: "The number of people checked in for an event",
     },
 
     comments_count: {
@@ -36,7 +36,7 @@ const eventStatsSchema = new mongoose.Schema(
         },
         message: "Invalid comments_count: Must be an integer",
       },
-      description: "The number of people currently registered for an event.",
+      description: "The number of comments on an event",
     },
   },
   {
