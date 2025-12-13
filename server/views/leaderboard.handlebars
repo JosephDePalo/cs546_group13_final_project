@@ -1,0 +1,7 @@
+<h1>Top 10 Users</h1>
+
+<ol>
+  {{#each users}}
+  <li><a href="/api/v1/users/{{_id}}">{{username}}</a>- {{account_stats.points}} points</li>
+  {{/each}}
+</ol>

@@ -170,5 +170,15 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.statics.getTopUsers = function (limit = 10) {
+  return this.find({
+    is_active: true,
+  })
+    .sort({ "account_stats.points": -1 })
+    .limit(limit)
+    .select("-password_hash -otp")
+    .lean();
+};
+
 const User = mongoose.model("User", userSchema);
 export default User;
