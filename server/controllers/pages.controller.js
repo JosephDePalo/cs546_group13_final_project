@@ -4,26 +4,26 @@ import { formatDateTimeLocal } from "../utils/helpers.js";
 
 export const renderHome = (req, res) => {
   res.render("home", {
-    title: "Volunteer Forum",
+    page_title: "Volunteer Forum",
   });
 };
 
 export const renderRegister = (req, res) => {
   res.render("register", {
-    title: "Register | Volunteer Forum",
+    page_title: "Register | Volunteer Forum",
   });
 };
 
 export const exampleProtectedPage = (req, res) => {
   res.render("exampleProtectedPage", {
-    title: "Protected Page",
+    page_title: "Protected Page",
     user: req.user.toObject(),
   });
 };
 
 export const renderLogin = (req, res) => {
   res.render("login", {
-    title: "Login | Volunteer Forum",
+    page_title: "Login | Volunteer Forum",
   });
 };
 
@@ -31,14 +31,14 @@ export const renderLeaderboard = async (req, res) => {
   const top_users = await User.getTopUsers();
   console.log(top_users);
   res.render("leaderboard", {
-    title: "Leaderboard | Volunteer Forum",
+    page_title: "Leaderboard | Volunteer Forum",
     users: top_users,
   });
 };
 
 export const renderNewEvent = (req, res) => {
   res.render("new_event", {
-    title: "New Event | Volunteer Forum",
+    page_title: "New Event | Volunteer Forum",
   });
 };
 
@@ -49,7 +49,7 @@ export const renderEventManagement = async (req, res) => {
     const formatted_end_time = formatDateTimeLocal(event.end_time);
 
     res.render("event_management", {
-      title: "Event Management | Volunteer Forum",
+      page_title: "Event Management | Volunteer Forum",
       ...event,
       formatted_start_time,
       formatted_end_time,
@@ -63,7 +63,7 @@ export const renderEventManagement = async (req, res) => {
 export const renderEditProfile = async (req, res) => {
   let user = await User.findById(req.params.id).lean();
   res.render("edit_profile", {
-    title: "Edit Profile | Volunteer Forum",
+    page_title: "Edit Profile | Volunteer Forum",
     ...user,
   });
 };

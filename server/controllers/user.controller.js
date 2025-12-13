@@ -177,7 +177,7 @@ export const getUserById = async (req, res) => {
     }
 
     res.render("user_profile", {
-      title: `${user.username} | Volunteer Forum`,
+      page_title: `${user.username} | Volunteer Forum`,
       ...user,
     });
   } catch (err) {

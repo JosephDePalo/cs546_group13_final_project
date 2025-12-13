@@ -69,7 +69,7 @@ export const getEvent = async (req, res) => {
     const formatted_end_time = formatDateTimeLocal(event.end_time);
 
     res.render("event_details", {
-      title: `${event.title} | Volunteer Forum`,
+      page_title: `${event.title} | Volunteer Forum`,
       ...event,
       formatted_start_time,
       formatted_end_time,
@@ -92,7 +92,7 @@ export const getEvents = async (req, res) => {
     const pageCount = Math.ceil(eventCount / limit);
     res.render("event_feed", {
       events,
-      title: "Event Feed | Volunteer Forum",
+      page_title: "Event Feed | Volunteer Forum",
       page_details: {
         is_next_page: pageCount > page,
         next_page: parseInt(page) + 1,
