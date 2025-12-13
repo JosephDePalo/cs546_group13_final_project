@@ -80,7 +80,7 @@ const eventSchema = new mongoose.Schema(
       trim: true,
       maxlength: [500, "Invalid location_url length: max 500 chars"],
       match: [
-        /.*/,
+        /^https?:\/\//,
         "Invalid location_url: Please provide a valid HTTP/HTTPS URL",
       ],
       description:
@@ -173,6 +173,7 @@ const eventSchema = new mongoose.Schema(
     address: {
       type: String,
       trim: true,
+      max: [40, "Invalid max_capacity size: max 40"],
       default: null,
       description: "The address where the event is taking place.",
     },
@@ -180,6 +181,7 @@ const eventSchema = new mongoose.Schema(
     city: {
       type: String,
       trim: true,
+      max: [40, "Invalid max_capacity size: max 40"],
       default: null,
       description: "The city where the event is taking place.",
     },
@@ -187,6 +189,7 @@ const eventSchema = new mongoose.Schema(
     state: {
       type: String,
       trim: true,
+      max: [40, "Invalid max_capacity size: max 40"],
       default: null,
       description: "The state where the event is taking place.",
     },

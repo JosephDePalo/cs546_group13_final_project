@@ -1,186 +1,131 @@
+/* global $, jQuery */
 
 (function ($) {
-    let edit_form = document.getElementById("overview-edit-form");
-    edit_form.addEventListener('submit', (event) => {
-        event.preventDefault();
+  let edit_form = document.getElementById("overview-edit-form");
+  edit_form.addEventListener("submit", (event) => {
+    event.preventDefault();
 
-        let title = document.getElementById("title");
-        let description = document.getElementById("description");
-        let start_time = document.getElementById("start_time");
-        let end_time = document.getElementById("end_time");
-        let max_cap = document.getElementById("max_capacity");
-        let address = document.getElementById("address");
-        let city = document.getElementById("city");
-        let state = document.getElementById("state");
-        let location_url = document.getElementById("location_url");
-        let errors = document.getElementById("errors");
-        let errors_count = 0;
+    let title = document.getElementById("title");
+    let description = document.getElementById("description");
+    let start_time = document.getElementById("start_time");
+    let end_time = document.getElementById("end_time");
+    let max_cap = document.getElementById("max_capacity");
+    let address = document.getElementById("address");
+    let city = document.getElementById("city");
+    let state = document.getElementById("state");
+    let location_url = document.getElementById("location_url");
+    let errors = document.getElementById("errors");
+    let errors_count = 0;
 
-        errors.innerHTML = "";
-        $(errors).hide();
+    const put_error = (msg) => {
+      let error_message = document.createElement("dd");
+      error_message.append(msg);
+      errors.appendChild(error_message);
+      $(errors).show();
+      errors_count++;
+    };
 
-        // Checks for title
+    errors.innerHTML = "";
+    $(errors).hide();
 
-        title.value = title.value.trim();
-        if (title.value === undefined) {
-            let error_message = document.createElement("dd");
-            error_message.append("Error: title must be defined!");
-            errors.appendChild(error_message);
-            $(errors).show();
-            errors_count++;
-        }
-        if (typeof title.value !== "string") {
-            let error_message = document.createElement("dd");
-            error_message.append("Error: title must be a string!");
-            errors.appendChild(error_message);
-            $(errors).show();
-            errors_count++;
-        }
-        if (title.value.length === 0) {
-            let error_message = document.createElement("dd");
-            error_message.append("Error: title cannot be an empty string or string of spaces!");
-            errors.appendChild(error_message);
-            $(errors).show();
-            errors_count++;
-        }
-        if (title.value.length < 5) {
-            let error_message = document.createElement("dd");
-            error_message.append("Error: title must be at least 5 characters long!");
-            errors.appendChild(error_message);
-            $(errors).show();
-            errors_count++;
-        }
-        if (title.value.length > 100) {
-            let error_message = document.createElement("dd");
-            error_message.append("Error: title must be at most 100 characters long!");
-            errors.appendChild(error_message);
-            $(errors).show();
-            errors_count++;
-        }
+    title.value = title.value.trim();
+    if (title.value === undefined) {
+      put_error("Error: title must be defined!");
+    }
+    if (typeof title.value !== "string") {
+      put_error("Error: title must be a string!");
+    }
+    if (title.value.length === 0) {
+      put_error("Error: title cannot be an empty string or string of spaces!");
+    }
+    if (title.value.length < 5) {
+      put_error("Error: title must be at least 5 characters long!");
+    }
+    if (title.value.length > 100) {
+      put_error("Error: title must be less than 101 characters long!");
+    }
+    if (!title.value.trim().match(/^[a-zA-Z0-9_-\s]+$/)) {
+      put_error(
+        "Error: title must be only letters, numbers, spaces, _, and -!",
+      );
+    }
 
-        // Checks for description
+    if (description.value.length !== 0) {
+      if (typeof description.value !== "string") {
+        put_error("Error: description must be a string!");
+      }
+      if (description.value.length < 5) {
+        put_error("Error: description must be at least 5 characters long!");
+      }
+      if (description.value.length > 500) {
+        put_error("Error: description must be less than 501 characters long!");
+      }
+    }
 
-        if (description.value.length !== 0) {
-            if (typeof description.value !== "string") {
-                let error_message = document.createElement("dd");
-                error_message.append("Error: description must be a string!");
-                errors.appendChild(error_message);
-                $(errors).show();
-                errors_count++;
-            }
-            if (description.value.length < 5) {
-                let error_message = document.createElement("dd");
-                error_message.append("Error: description must be at least 5 characters long!");
-                errors.appendChild(error_message);
-                $(errors).show();
-                errors_count++;
-            }
-            if (description.value.length > 500) {
-                let error_message = document.createElement("dd");
-                error_message.append("Error: description must be at most 500 characters long!");
-                errors.appendChild(error_message);
-                $(errors).show();
-                errors_count++;
-            }
-        }
+    if (!isNaN(start_time.value)) {
+      put_error("Error: start_time must be defined!");
+    }
 
-        // Checks for start_time
+    if (!isNaN(end_time.value)) {
+      put_error("Error: end_time must be defined!");
+    }
 
-        if (!isNaN(start_time.value)) {
-            let error_message = document.createElement("dd");
-            error_message.append("Error: start_time must be defined!");
-            errors.appendChild(error_message);
-            $(errors).show();
-            errors_count++;
-        }
-        
-        // checks for end_time
+    if (max_cap.value === undefined) {
+      put_error("Error: max_capacity must be defined!");
+    }
+    if (typeof Number(max_cap.value) !== "number") {
+      put_error("Error: max_capacity must be a number!");
+    }
+    if (Number(max_cap.value) < 1) {
+      put_error("Error: max_capacity must be at least 1!");
+    }
+    if (Number(max_cap.value) > 200) {
+      put_error("Error: max_capacity must be less than 201!");
+    }
 
-        if (!isNaN(end_time.value)) {
-            let error_message = document.createElement("dd");
-            error_message.append("Error: end_time must be defined!");
-            errors.appendChild(error_message);
-            $(errors).show();
-            errors_count++;
-        }
+    if (address.value.trim().length !== 0) {
+      if (typeof address.value !== "string") {
+        put_error("Error: address must be a string!");
+      }
+      if (address.value.length > 40) {
+        put_error("Error: address must be less than 41 characters long!");
+      }
+    }
 
-        // checks for max_cap
+    if (city.value.trim().length !== 0) {
+      if (typeof city.value !== "string") {
+        put_error("Error: city must be a string!");
+      }
+      if (city.value.length > 40) {
+        put_error("Error: city must be less than 41 characters long!");
+      }
+    }
 
-        if (max_cap.value === undefined) {
-            let error_message = document.createElement("dd");
-            error_message.append("Error: max_capacity must be defined!");
-            errors.appendChild(error_message);
-            $(errors).show();
-            errors_count++;
-        }
-        if (typeof Number(max_cap.value) !== "number") {
-            let error_message = document.createElement("dd");
-            error_message.append("Error: max_capacity must be a number!");
-            errors.appendChild(error_message);
-            $(errors).show();
-            errors_count++;
-        }
-        if (Number(max_cap.value) < 4) {
-            let error_message = document.createElement("dd");
-            error_message.append("Error: max_capacity must be at least 4!");
-            errors.appendChild(error_message);
-            $(errors).show();
-            errors_count++;
-        } 
+    if (state.value.trim().length !== 0) {
+      if (typeof state.value !== "string") {
+        put_error("Error: state must be a string!");
+      }
+      if (state.value.length > 40) {
+        put_error("Error: state must be less than 41 characters long!");
+      }
+    }
 
-        
-        // checks for address
+    if (location_url.value.trim().length !== 0) {
+      if (typeof location_url.value !== "string") {
+        put_error("Error: location_url must be a string!");
+      }
+      if (location_url.value.length > 501) {
+        put_error("Error: location url must be less than 501 characters long!");
+      }
+      if (!location_url.value.trim().match(/^https?:\/\//)) {
+        put_error(
+          "Error: location url must start with 'http://' or 'https://'!",
+        );
+      }
+    }
 
-        if (address.value.trim().length !== 0) {
-            if (typeof address.value !== "string") {
-                let error_message = document.createElement("dd");
-                error_message.append("Error: address must be a string!");
-                errors.appendChild(error_message);
-                $(errors).show();
-                errors_count++;
-            }
-        }
-        // checks for city
-
-        if (city.value.trim().length !== 0) {
-            if (typeof city.value !== "string") {
-                let error_message = document.createElement("dd");
-                error_message.append("Error: city must be a string!");
-                errors.appendChild(error_message);
-                $(errors).show();
-                errors_count++;
-            }
-        }
-
-        // checks for state
-
-        if (state.value.trim().length !== 0) {
-            if (typeof state.value !== "string") {
-                let error_message = document.createElement("dd");
-                error_message.append("Error: state must be a string!");
-                errors.appendChild(error_message);
-                $(errors).show();
-                errors_count++;
-            }
-        }
-        
-
-        // checks for location_url
-
-        if (location_url.value.trim().length !== 0) {
-            if (typeof location_url.value !== "string") {
-                let error_message = document.createElement("dd");
-                error_message.append("Error: location_url must be a string!");
-                errors.appendChild(error_message);
-                $(errors).show();
-                errors_count++;
-            }
-        }
-
-        if (errors_count === 0) {
-            edit_form.submit();
-        }
-
-    });
+    if (errors_count === 0) {
+      edit_form.submit();
+    }
+  });
 })(jQuery);
-
