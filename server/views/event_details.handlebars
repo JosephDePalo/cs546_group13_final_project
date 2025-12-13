@@ -1,0 +1,72 @@
+<h1>Event Details – {{title}}</h1>
+
+<section class="event-details">
+
+  <h2>Overview</h2>
+
+  <div class="detail-item">
+    <span class="detail-label">Title</span>
+    <p class="detail-value">{{title}}</p>
+  </div>
+
+  <div class="detail-item">
+    <span class="detail-label">Description</span>
+    <p class="detail-value">{{description}}</p>
+  </div>
+
+  <div class="detail-item">
+    <span class="detail-label">Start Time</span>
+    <time class="detail-value" datetime="{{start_time}}">
+      {{formatted_start_time}}
+    </time>
+  </div>
+
+  <div class="detail-item">
+    <span class="detail-label">End Time</span>
+    <time class="detail-value" datetime="{{end_time}}">
+      {{formatted_end_time}}
+    </time>
+  </div>
+
+  <div class="detail-item">
+    <span class="detail-label">Max Capacity</span>
+    <p class="detail-value">{{max_capacity}}</p>
+  </div>
+
+  <h2>Other</h2>
+
+  <div class="detail-item">
+    <span class="detail-label">Address</span>
+    <p class="detail-value">{{address}}</p>
+  </div>
+
+  <div class="detail-item">
+    <span class="detail-label">City</span>
+    <p class="detail-value">{{city}}</p>
+  </div>
+
+  <div class="detail-item">
+    <span class="detail-label">State</span>
+    <p class="detail-value">{{state}}</p>
+  </div>
+
+  <div class="detail-item">
+    <span class="detail-label">Location URL</span>
+    <p class="detail-value">
+      <a href="{{location_url}}" target="_blank" rel="noopener">
+        {{location_url}}
+      </a>
+    </p>
+  </div>
+
+</section>
+
+<div class="actions">
+  <a href="/api/v1/events/{{_id}}/edit" class="btn btn-primary">
+    Edit Event
+  </a>
+
+  <a href="/api/v1/events" class="btn btn-primary">
+    Back to Events
+  </a>
+</div>

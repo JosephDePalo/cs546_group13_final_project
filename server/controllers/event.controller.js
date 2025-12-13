@@ -1,4 +1,5 @@
 import Event from "../models/event.model.js";
+import { formatDateTimeLocal } from "../helpers.js";
 
 // @desc     Create new event
 // @route    POST /api/events
@@ -42,13 +43,21 @@ export const newEvent = async (req, res) => {
 
 export const getEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id);
+    const event = await Event.findById(req.params.id).lean();
 
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
     }
 
-    res.json(event);
+    const formatted_start_time = formatDateTimeLocal(event.start_time);
+    const formatted_end_time = formatDateTimeLocal(event.end_time);
+
+    res.render("event_details", {
+      title: `${event.title} | Volunteer Forum`,
+      ...event,
+      formatted_start_time,
+      formatted_end_time,
+    });
   } catch (err) {
     console.error("Get event error:", err.message);
     res.status(500).json({ message: "Unable to fetch event." });
