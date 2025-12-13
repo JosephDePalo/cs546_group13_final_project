@@ -9,6 +9,15 @@
 </head>
 
 <body>
+  {{#if errors}}
+  <div class="error-container">
+    <ul>
+      {{#each errors}}
+      <li>{{this}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  {{/if}}
   {{{body}}}
 </body>
 
