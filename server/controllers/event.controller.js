@@ -44,7 +44,6 @@ export const newEvent = async (req, res) => {
       city,
       state,
     });
-    console.log(event);
 
     res.redirect(`/api/v1/events/${event._id}`);
   } catch (err) {
@@ -70,6 +69,8 @@ export const getEvent = async (req, res) => {
 
     res.render("event_details", {
       page_title: `${event.title} | Volunteer Forum`,
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
       ...event,
       formatted_start_time,
       formatted_end_time,
@@ -93,6 +94,8 @@ export const getEvents = async (req, res) => {
     res.render("event_feed", {
       events,
       page_title: "Event Feed | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
       page_details: {
         is_next_page: pageCount > page,
         next_page: parseInt(page) + 1,

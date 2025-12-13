@@ -178,6 +178,8 @@ export const getUserById = async (req, res) => {
 
     res.render("user_profile", {
       page_title: `${user.username} | Volunteer Forum`,
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
       ...user,
     });
   } catch (err) {
@@ -229,7 +231,7 @@ export const deleteUser = async (req, res) => {
 };
 
 // @desc     Logout user
-// @route    POST /api/v1/users/logout
+// @route    GET /api/v1/users/logout
 // @access   Private
 export const logout = (req, res) => {
   // Clear authentication cookie and redirect to login page
