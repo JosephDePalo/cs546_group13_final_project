@@ -26,14 +26,16 @@
     </ul>
   </nav>
   {{#if errors}}
-  <div id="errors" class="error-container">
+  <div id="server-errors" class="error-container">
     <ul>
       {{#each errors}}
       <li>{{this}}</li>
       {{/each}}
     </ul>
   </div>
-  {{/if}}
+  <div id="errors" class="hidden">
+    <div class="text-goes-here"></div>
+  </div>
   {{{body}}}
 </body>
 
