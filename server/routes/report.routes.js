@@ -14,26 +14,28 @@ const router = express.Router();
 
 // Create new report
 
-router.route("/reports").post(protect, newReport);
+// /api/v1/reports
+
+router.route("/").post(protect, newReport);
 
 // Get report by reportId | update report | delete report (admin priviledges only)
 
 router
-  .route("/reports/:id")
+  .route("/:id")
   .get(protect, admin, getReport)
   .put(protect, admin, updateReport)
   .delete(protect, admin, deleteReport);
 
 // Get all reports (admin priviledges only)
 
-router.route("/reports/admin").get(protect, admin, getAllReports);
+// router.route("/reports/admin").get(protect, admin, getAllReports);
 
 // Get all reports for specified eventId (admin priviledges only)
 
-router.route("/reports/admin/:eventid").get(protect, admin, getReport);
+// router.route("/reports/admin/:eventid").get(protect, admin, getReport);
 
 // Resolve a report(admin priviledges only)
 
-router.route("/reports/resolve/:id").put(protect, admin, resolveReport);
+// router.route("/reports/resolve/:id").put(protect, admin, resolveReport);
 
 export default router;

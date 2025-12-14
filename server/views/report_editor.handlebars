@@ -1,7 +1,7 @@
 {{! Create Report | Update Report}}
 <h1> {{title}} </h1>
 
-<form id="report-form" action="/reports" method="POST" class="form">
+<form id="reports-form" name="reports-form "action="/api/v1/reports/{{_id}}?target={{type}}&target_id={{target_id}}" method="POST" class="form">
     <label>
         Report Reason
         <input type="text" name="reason" placeholder="Enter Reason" value="{{reason}}" class="full-width-input">
@@ -22,5 +22,5 @@
 
     <button type="submit" id="submit-button">Submit Report</button>
     <button type="reset">Clear Form</button>
-
 </form>
+

@@ -82,3 +82,13 @@ export const renderEditProfile = async (req, res) => {
     ...user,
   });
 };
+
+export const renderNewReport = (req, res, target_type) => { 
+  res.render("report_editor", {
+    title: "New Report | Volunteer Forum",
+    logged_in: Boolean(req.user),
+    _id: req.user._id,
+    type: target_type,
+    target_id: req.params.id
+  });
+};
