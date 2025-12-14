@@ -26,9 +26,11 @@ export const newEvent = async (req, res) => {
       ],
     });
     if (eventExists) {
-      return res.status(400).json({
-        message:
-          "You have already created an upcoming or ongoing event with this title.",
+      return res.status(400).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `You have already created an upcoming or ongoing event with this title.`,
       });
     }
 
@@ -48,7 +50,12 @@ export const newEvent = async (req, res) => {
     res.redirect(`/events/${event._id}`);
   } catch (err) {
     console.error("New event error:", err.message);
-    res.status(500).json({ message: "Internal server error." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Internal server error.`,
+    });
   }
 };
 
@@ -62,7 +69,12 @@ export const getEvent = async (req, res) => {
 
     const event = await Event.findById(eventId).lean();
     if (!event) {
-      return res.status(404).json({ message: "Event not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event not found.`,
+      });
     }
 
     const formatted_start_time = formatDateTimeLocal(event.start_time);
@@ -115,7 +127,12 @@ export const getEvent = async (req, res) => {
     });
   } catch (err) {
     console.error("Get event error:", err.message);
-    res.status(500).json({ message: "Unable to fetch event." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to fetch event.`,
+    });
   }
 };
 
@@ -144,7 +161,12 @@ export const getEvents = async (req, res) => {
     res.json(eventFeed);
   } catch (err) {
     console.error("Get events error:", err.message);
-    res.status(500).json({ message: "Unable to fetch events." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to fetch events.`,
+    });
   }
 };
 
@@ -163,9 +185,19 @@ export const updateEventDetails = async (req, res) => {
 
     const event = await Event.findById(req.params.id);
     if (!event) {
-      return res.status(404).json({ message: "Event not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event not found.`,
+      });
     } else if (!req.user.is_admin && !event.organizer_id.equals(req.user._id)) {
-      return res.status(403).json({ message: "User does not own this event." });
+      return res.status(403).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `User does not own this event.`,
+      });
     }
 
     const updatedEvent = await Event.findByIdAndUpdate(req.params.id, updates, {
@@ -173,13 +205,23 @@ export const updateEventDetails = async (req, res) => {
     });
 
     if (!updatedEvent) {
-      return res.status(404).json({ message: "Event not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event not found.`,
+      });
     }
 
     res.redirect(`/events/${event._id}`);
   } catch (err) {
     console.error("Update event details error:", err.message);
-    res.status(500).json({ message: "Unable to update event details." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to update event details.`,
+    });
   }
 };
 
@@ -203,13 +245,23 @@ export const disableEvent = async (req, res) => {
     );
 
     if (!disabledEvent) {
-      return res.status(404).json({ message: "Event not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event not found.`,
+      });
     }
 
     res.json(disabledEvent);
   } catch (err) {
     console.error("Disable event error:", err.message);
-    res.status(500).json({ message: "Unable to disable event." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to disable event.`,
+    });
   }
 };
 
@@ -221,9 +273,19 @@ export const deleteEvent = async (req, res) => {
     const event = await Event.findById(req.params.id);
 
     if (!event) {
-      return res.status(404).json({ message: "Event not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event not found.`,
+      });
     } else if (!req.user.is_admin && !event.organizer_id.equals(req.user._id)) {
-      return res.status(403).json({ message: "User does not own this event." });
+      return res.status(403).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `User does not own this event.`,
+      });
     }
 
     await event.deleteOne();
@@ -231,6 +293,11 @@ export const deleteEvent = async (req, res) => {
     res.json(event);
   } catch (err) {
     console.error("Delete event error:", err.message);
-    res.status(500).json({ message: "Unable to delete event." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to delete event.`,
+    });
   }
 };

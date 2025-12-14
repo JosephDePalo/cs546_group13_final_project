@@ -11,8 +11,11 @@ export const login = async (req, res) => {
 
     const user = await User.findOne({ username });
     if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({
-        message: "Invalid username or password",
+      return res.status(401).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Invalid username or password`,
       });
     }
 
@@ -27,8 +30,11 @@ export const login = async (req, res) => {
     return res.redirect("/events");
   } catch (err) {
     console.error("Login error:", err.message);
-    return res.status(500).json({
-      message: "Internal server error",
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Internal server error`,
     });
   }
 };
@@ -45,9 +51,12 @@ export const register = async (req, res) => {
     });
 
     if (userExists) {
-      return res
-        .status(400)
-        .json({ message: "A user with this information already exists." });
+      return res.status(400).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `A user with this information already exists.`,
+      });
     }
 
     const user = await User.create({
@@ -64,7 +73,12 @@ export const register = async (req, res) => {
     res.redirect("/login");
   } catch (err) {
     console.error("Register error:", err.message);
-    res.status(500).json({ message: "Unable to create user." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to create user.`,
+    });
   }
 };
 
@@ -74,7 +88,12 @@ export const register = async (req, res) => {
 export const getUserProfile = async (req, res) => {
   try {
     if (!req.user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `User not found.`,
+      });
     }
 
     const safeUser = req.user.toObject();
@@ -84,7 +103,12 @@ export const getUserProfile = async (req, res) => {
     res.json(safeUser);
   } catch (err) {
     console.error("Profile error:", err.message);
-    res.status(500).json({ message: "Internal server error." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Internal server error.`,
+    });
   }
 };
 
@@ -105,13 +129,23 @@ export const updateUserProfile = async (req, res) => {
     }).select("-password_hash -otp");
 
     if (!updatedUser) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `User not found.`,
+      });
     }
 
     res.json(updatedUser);
   } catch (err) {
     console.error("Profile update error:", err.message);
-    res.status(500).json({ message: "Unable to update profile." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to update profile.`,
+    });
   }
 };
 
@@ -123,19 +157,32 @@ export const updatePassword = async (req, res) => {
     const { current_password, new_password } = req.body;
 
     if (!current_password || !new_password) {
-      return res.status(400).json({ message: "Both fields are required." });
+      return res.status(400).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Both current password and new password are required`,
+      });
     }
 
     const user = await User.findById(req.user._id);
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `User not found.`,
+      });
     }
 
     const isMatch = await user.matchPassword(current_password);
     if (!isMatch) {
-      return res
-        .status(401)
-        .json({ message: "Current password is incorrect." });
+      return res.status(401).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Current password is incorrect.`,
+      });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -143,10 +190,15 @@ export const updatePassword = async (req, res) => {
 
     await user.save();
 
-    res.json({ message: "Password updated successfully." });
+    res.redirect(`/api/v1/users/${user._id}`);
   } catch (err) {
     console.error("Password update error:", err.message);
-    res.status(500).json({ message: "Unable to update password." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to update password.`,
+    });
   }
 };
 
@@ -159,7 +211,12 @@ export const getUsers = async (req, res) => {
     res.json(users);
   } catch (err) {
     console.error("Get users error:", err.message);
-    res.status(500).json({ message: "Internal server error." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Internal server error.`,
+    });
   }
 };
 
@@ -173,7 +230,12 @@ export const getUserById = async (req, res) => {
       .lean();
 
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `User not found.`,
+      });
     }
 
     res.render("user_profile", {
@@ -184,7 +246,12 @@ export const getUserById = async (req, res) => {
     });
   } catch (err) {
     console.error("Get user error:", err.message);
-    res.status(500).json({ message: "Unable to fetch user." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to fetch user.`,
+    });
   }
 };
 
@@ -202,13 +269,23 @@ export const updateUserById = async (req, res) => {
     }).select("-password_hash -otp");
 
     if (!updatedUser) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `User not found.`,
+      });
     }
 
     res.redirect(`/api/v1/users/${req.params.id}`);
   } catch (err) {
     console.error("Profile update error:", err.message);
-    res.status(500).json({ message: "Unable to update profile." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to update profile.`,
+    });
   }
 };
 
@@ -220,13 +297,23 @@ export const deleteUser = async (req, res) => {
     const u = await User.findByIdAndDelete(req.params.id);
 
     if (!u) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `User not found.`,
+      });
     }
 
     res.json({ message: "User deleted successfully." });
   } catch (err) {
     console.error("Delete user error:", err.message);
-    res.status(500).json({ message: "Unable to delete user." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to delete user.`,
+    });
   }
 };
 
