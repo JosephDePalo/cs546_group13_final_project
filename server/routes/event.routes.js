@@ -11,23 +11,28 @@ import {
   cancelEventReg,
   newEventRegistration,
 } from "../controllers/eventreg.controller.js";
-import { protect, admin } from "../middlewares/auth.middleware.js";
+import {
+  isLoggedIn,
+  isAdminOrEventOrganizer,
+} from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.route("/").get(getEvents).post(protect, newEvent);
+router.route("/").all(isLoggedIn).get(getEvents).post(newEvent);
 
 router
   .route("/:id")
+  .all(isLoggedIn)
   .get(getEvent)
-  .put(protect, updateEventDetails)
-  .delete(protect, deleteEvent);
+  .put(isAdminOrEventOrganizer, updateEventDetails)
+  .delete(isAdminOrEventOrganizer, deleteEvent);
 
 router
   .route("/register/:id")
-  .post(protect, newEventRegistration)
-  .delete(protect, cancelEventReg);
+  .all(isLoggedIn)
+  .post(newEventRegistration)
+  .delete(cancelEventReg);
 
-router.route("/disable/:id").put(protect, admin, disableEvent);
+router.route("/disable/:id").put(isLoggedIn, isAdmin, disableEvent);
 
 export default router;

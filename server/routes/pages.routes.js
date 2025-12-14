@@ -11,45 +11,46 @@ import {
   renderEvent,
   renderEventsList,
 } from "../controllers/pages.controller.js";
-import { exampleProtectedPage } from "../controllers/pages.controller.js";
-import { protect, admin } from "../middlewares/auth.middleware.js";
+import {
+  isAdminOrEventOrganizer,
+  isAdminOrTargetUser,
+  isLoggedIn,
+  isNotLoggedIn,
+} from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
 router.get("/", (req, res) => res.redirect("/home"));
-
 router.get("/home", renderHome);
-
-router.get("/example-protected", protect, exampleProtectedPage);
-
-router.get("/register", renderRegister);
-router.get("/login", renderLogin);
-
 router.get("/leaderboard", renderLeaderboard);
 
-router.get("/events/", renderEventsList);
+router.get("/register", isNotLoggedIn, renderRegister);
+router.get("/login", isNotLoggedIn, renderLogin);
+router.get(
+  "/user/edit/:id",
+  isLoggedIn,
+  isAdminOrTargetUser,
+  renderEditProfile,
+);
 
-router.get("/events/:id", renderEvent);
+router.get("/events/", isLoggedIn, renderEventsList);
+router.get("/events/:id", isLoggedIn, renderEvent);
+router.get("/event/new_event", isLoggedIn, renderNewEvent);
+router.get(
+  "/event/manage/:id",
+  isLoggedIn,
+  isAdminOrEventOrganizer,
+  renderEventManagement,
+);
 
-router.get("/event/new_event", renderNewEvent);
-``;
-router.get("/event/manage/:id", renderEventManagement);
-
-router.get("/user/edit/:id", renderEditProfile);
-
-router.get("/report/event/:id", (req, res) =>
+router.get("/report/event/:id", isLoggedIn, (req, res) =>
   renderNewReport(req, res, "event"),
 );
-router.get("/report/user/:id", (req, res) => renderNewReport(req, res, "user"));
-
-router.get("/report/comment/:id", (req, res) =>
+router.get("/report/user/:id", isLoggedIn, (req, res) =>
+  renderNewReport(req, res, "user"),
+);
+router.get("/report/comment/:id", isLoggedIn, (req, res) =>
   renderNewReport(req, res, "comment"),
 );
-
-// EXAMPLE PROTECTED PAGE
-// router.get("/profile" , protect, renderProfile)
-
-// EXAMPLE PROTECTED ADMIN ONLY PAGE
-// router.get("/allusers" , protect, admin, renderAllUsers)
 
 export default router;
