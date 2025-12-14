@@ -1,4 +1,5 @@
 /* global $, jQuery */
+import xss from "xss"
 
 (function ($) {
   let signin_form = document.getElementById("signin-form");
@@ -72,7 +73,12 @@
       put_error("Error: password must contain at least 1 special character!");
     }
 
+    // XSS validation
+
+    let validated_username = xss(username.value.trim());
+
     if (errors_count === 0) {
+      username.value = validated_username;
       signin_form.submit();
     }
   });
