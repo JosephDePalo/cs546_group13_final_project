@@ -3,6 +3,7 @@ import {
   getReport,
   updateReport,
   deleteReport,
+  newReport,
 } from "../controllers/report.controller.js";
 
 import { isLoggedIn, isAdmin } from "../middlewares/auth.middleware.js";
@@ -12,6 +13,8 @@ const router = express.Router();
 // Create new report
 
 // /api/v1/reports
+
+router.route("/").post(isLoggedIn, newReport);
 
 // Get report by reportId | update report | delete report (admin priviledges only)
 

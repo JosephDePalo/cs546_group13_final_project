@@ -1,6 +1,6 @@
-import Comment from '../models/comments.model.js';
-import Event from '../models/event.model.js';
-import User from '../models/user.model.js';
+import Comment from "../models/comments.model.js";
+import Event from "../models/event.model.js";
+import User from "../models/user.model.js";
 
 // Create a comment
 export const createComment = async (req, res) => {
@@ -10,18 +10,22 @@ export const createComment = async (req, res) => {
 
     // Validate necessary fields
     if (!event_id || !content) {
-      return res.status(400).json({
-
-        message: 'EventId and content required'
+      return res.status(400).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `EventId and content required`,
       });
     }
 
     // Verify if the event exists
     const event = await Event.findById(event_id);
     if (!event) {
-      return res.status(404).json({
-
-        message: 'Event does not exist.'
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event does not exist`,
       });
     }
 
@@ -32,24 +36,30 @@ export const createComment = async (req, res) => {
     if (parent_comment_id) {
       parentComment = await Comment.findById(parent_comment_id);
       if (!parentComment) {
-        return res.status(404).json({
-
-          message: 'Parent comment does not exist'
+        return res.status(404).render("error", {
+          page_title: "Register | Volunteer Forum",
+          logged_in: Boolean(req.user),
+          user_id: req.user ? req.user._id : null,
+          message: `Parent comment does not exist`,
         });
       }
 
       if (parentComment.disabled) {
-        return res.status(400).json({
-
-          message: 'Unable to reply to disabled comments'
+        return res.status(400).render("error", {
+          page_title: "Register | Volunteer Forum",
+          logged_in: Boolean(req.user),
+          user_id: req.user ? req.user._id : null,
+          message: `Unable to reply to disabled comments`,
         });
       }
 
       // Make sure the replies are to comments from the same event.
       if (parentComment.event_id.toString() !== event_id) {
-        return res.status(400).json({
-
-          message: 'You can only reply to comments from the same event.'
+        return res.status(400).render("error", {
+          page_title: "Register | Volunteer Forum",
+          logged_in: Boolean(req.user),
+          user_id: req.user ? req.user._id : null,
+          message: `You can only reply to comments from the same event.`,
         });
       }
 
@@ -62,30 +72,28 @@ export const createComment = async (req, res) => {
       event_id,
       content,
       parent_comment_id: parent_comment_id || null,
-      reply_depth: replyDepth
+      reply_depth: replyDepth,
     });
 
     // Returning user information
     const populatedComment = await Comment.findById(comment._id)
-      .populate('user_id', 'username first_name last_name profile_picture_url')
-      .populate('parent_comment_id', 'content user_id');
+      .populate("user_id", "username first_name last_name profile_picture_url")
+      .populate("parent_comment_id", "content user_id");
 
     // Update user comments count
     await User.findByIdAndUpdate(userId, {
-      $inc: { 'account_stats.comments_count': 1 }
+      $inc: { "account_stats.comments_count": 1 },
     });
 
     res.status(201).json({
-
-      message: parent_comment_id ? 'Reply successful' : 'Comment successful',
-      data: populatedComment
+      message: parent_comment_id ? "Reply successful" : "Comment successful",
+      data: populatedComment,
     });
   } catch (error) {
-    console.error('Create comment error:', error);
+    console.error("Create comment error:", error);
     res.status(500).json({
-
-      message: 'Comment creation failed',
-      error: error.message
+      message: "Comment creation failed",
+      error: error.message,
     });
   }
 };
@@ -102,52 +110,58 @@ export const getEventComments = async (req, res) => {
     // Verify if the event exists
     const event = await Event.findById(event_id);
     if (!event) {
-      return res.status(404).json({
-
-        message: 'Event does not exist'
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event does not exist`,
       });
     }
 
     // Get top comments
-    const comments = await Comment.getEventComments(event_id, pageNum, limitNum);
+    const comments = await Comment.getEventComments(
+      event_id,
+      pageNum,
+      limitNum,
+    );
     const totalComments = await Comment.countDocuments({
       event_id,
       parent_comment_id: null,
-      disabled: false
+      disabled: false,
     });
 
     let commentsWithReplies = comments;
 
     // If replies are included, retrieve the replies for each comment.
-    if (include_replies === 'true') {
+    if (include_replies === "true") {
       commentsWithReplies = await Promise.all(
         comments.map(async (comment) => {
           const replies = await Comment.getCommentReplies(comment._id, 1, 10);
           return {
             ...comment.toObject(),
             replies: replies,
-            replies_count: replies.length
+            replies_count: replies.length,
           };
-        })
+        }),
       );
     }
 
     res.json({
-
       data: commentsWithReplies,
       pagination: {
         page: pageNum,
         limit: limitNum,
         total: totalComments,
-        totalPages: Math.ceil(totalComments / limitNum)
-      }
+        totalPages: Math.ceil(totalComments / limitNum),
+      },
     });
   } catch (error) {
-    console.error('Get event comments error:', error);
-    res.status(500).json({
-
-      message: 'Failed to retrieve comment list',
-      error: error.message
+    console.error("Get event comments error:", error);
+    res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Failed to retrieve comment list`,
     });
   }
 };
@@ -158,21 +172,19 @@ export const getCommentById = async (req, res) => {
     const { comment_id } = req.params;
 
     const comment = await Comment.findById(comment_id)
-      .populate('user_id', 'username first_name last_name profile_picture_url')
-      .populate('event_id', 'title')
-      .populate('parent_comment_id', 'content user_id');
+      .populate("user_id", "username first_name last_name profile_picture_url")
+      .populate("event_id", "title")
+      .populate("parent_comment_id", "content user_id");
 
     if (!comment) {
       return res.status(404).json({
-
-        message: 'Comment does not exist'
+        message: "Comment does not exist",
       });
     }
 
     if (comment.disabled && !req.user.is_admin) {
       return res.status(403).json({
-
-        message: 'Comment has been disabled.'
+        message: "Comment has been disabled.",
       });
     }
 
@@ -180,19 +192,17 @@ export const getCommentById = async (req, res) => {
     const replies = await Comment.getCommentReplies(comment_id, 1, 50);
 
     res.json({
-
       data: {
         ...comment.toObject(),
         replies: replies,
-        replies_count: replies.length
-      }
+        replies_count: replies.length,
+      },
     });
   } catch (error) {
-    console.error('Get comment by id error:', error);
+    console.error("Get comment by id error:", error);
     res.status(500).json({
-
-      message: 'Failed to retrieve comment details',
-      error: error.message
+      message: "Failed to retrieve comment details",
+      error: error.message,
     });
   }
 };
@@ -210,37 +220,37 @@ export const getCommentReplies = async (req, res) => {
     const parentComment = await Comment.findById(comment_id);
     if (!parentComment) {
       return res.status(404).json({
-
-        message: 'Comment does not exist'
+        message: "Comment does not exist",
       });
     }
 
-    const replies = await Comment.getCommentReplies(comment_id, pageNum, limitNum);
+    const replies = await Comment.getCommentReplies(
+      comment_id,
+      pageNum,
+      limitNum,
+    );
     const totalReplies = await Comment.countDocuments({
       parent_comment_id: comment_id,
-      disabled: false
+      disabled: false,
     });
 
     res.json({
-
       data: replies,
       pagination: {
         page: pageNum,
         limit: limitNum,
         total: totalReplies,
-        totalPages: Math.ceil(totalReplies / limitNum)
-      }
+        totalPages: Math.ceil(totalReplies / limitNum),
+      },
     });
   } catch (error) {
-    console.error('Get comment replies error:', error);
+    console.error("Get comment replies error:", error);
     res.status(500).json({
-
-      message: 'Failed to retrieve reply list',
-      error: error.message
+      message: "Failed to retrieve reply list",
+      error: error.message,
     });
   }
 };
-
 
 // Delete comment
 export const deleteComment = async (req, res) => {
@@ -250,13 +260,12 @@ export const deleteComment = async (req, res) => {
 
     const comment = await Comment.findOne({
       _id: comment_id,
-      user_id: userId
+      user_id: userId,
     });
 
     if (!comment) {
       return res.status(404).json({
-
-        message: 'Comments do not exist'
+        message: "Comments do not exist",
       });
     }
 
@@ -265,13 +274,13 @@ export const deleteComment = async (req, res) => {
       // Regular users can only delete their own comments and cannot reply.
       const replyCount = await Comment.countDocuments({
         parent_comment_id: comment_id,
-        disabled: false
+        disabled: false,
       });
 
       if (replyCount > 0) {
         return res.status(400).json({
-
-          message: 'This comment has already been replied to and cannot be deleted.'
+          message:
+            "This comment has already been replied to and cannot be deleted.",
         });
       }
     }
@@ -280,19 +289,17 @@ export const deleteComment = async (req, res) => {
 
     // Update user comment count
     await User.findByIdAndUpdate(userId, {
-      $inc: { 'account_stats.comments_count': -1 }
+      $inc: { "account_stats.comments_count": -1 },
     });
 
     res.json({
-
-      message: 'Comment deleted successfully'
+      message: "Comment deleted successfully",
     });
   } catch (error) {
-    console.error('Delete comment error:', error);
+    console.error("Delete comment error:", error);
     res.status(500).json({
-
-      message: 'Comment deletion failed',
-      error: error.message
+      message: "Comment deletion failed",
+      error: error.message,
     });
   }
 };
@@ -306,15 +313,13 @@ export const reportComment = async (req, res) => {
 
     if (!comment) {
       return res.status(404).json({
-
-        message: 'Comment does not exist'
+        message: "Comment does not exist",
       });
     }
 
     if (comment.disabled) {
       return res.status(400).json({
-
-        message: 'Comments are disabled; reporting is not possible.'
+        message: "Comments are disabled; reporting is not possible.",
       });
     }
 
@@ -322,19 +327,17 @@ export const reportComment = async (req, res) => {
     await comment.incrementReportCount();
 
     res.json({
-
-      message: 'Report successful',
+      message: "Report successful",
       data: {
         comment_id: comment._id,
-        report_count: comment.report_count
-      }
+        report_count: comment.report_count,
+      },
     });
   } catch (error) {
-    console.error('Report comment error:', error);
+    console.error("Report comment error:", error);
     res.status(500).json({
-
-      message: 'Failed to report comment',
-      error: error.message
+      message: "Failed to report comment",
+      error: error.message,
     });
   }
 };
@@ -351,26 +354,23 @@ export const getUserComments = async (req, res) => {
     const comments = await Comment.getUserComments(user_id, pageNum, limitNum);
     const totalComments = await Comment.countDocuments({
       user_id,
-      disabled: false
+      disabled: false,
     });
 
     res.json({
-
       data: comments,
       pagination: {
         page: pageNum,
         limit: limitNum,
         total: totalComments,
-        totalPages: Math.ceil(totalComments / limitNum)
-      }
+        totalPages: Math.ceil(totalComments / limitNum),
+      },
     });
   } catch (error) {
-    console.error('Get user comments error:', error);
+    console.error("Get user comments error:", error);
     res.status(500).json({
-
-      message: 'Failed to retrieve user comments',
-      error: error.message
+      message: "Failed to retrieve user comments",
+      error: error.message,
     });
   }
-
 };

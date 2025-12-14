@@ -1,25 +1,42 @@
 <div class="login-page-container">
-  {{#if user}}
-    <h1>Welcome, {{user.username}}</h1>
+  <h1>Welcome to Volunteer Forum</h1>
 
-    <p>You are logged in.</p>
+  <p>Find and participate in volunteering events.</p>
 
-    <a href="/example-protected" class="btn btn-primary">
-      Go to Protected Page
-    </a>
+  {{#if logged_in}}
+  <h2>Welcome, {{user.username}}</h2>
 
-    <form method="POST" action="/api/v1/users/logout">
-      <button type="submit" class="btn btn-secondary">Logout</button>
-    </form>
+  <p>You are logged in.</p>
+
+
+  <a href="/api/v1/users/logout" class="btn btn-primary">Logout</a>
+  <a href="/events" class="btn btn-primary">Feed</a>
   {{else}}
-    <h1>Welcome to Volunteer Forum</h1>
-
-    <p>Find and participate in volunteering events.</p>
-
-    <p>Login to access the forum.</p>
-
-    <a href="/login" class="btn btn-primary">Login</a>
-    <a href="/register" class="btn btn-primary">Register</a>
-    <a href="/leaderboard" class="btn btn-primary">Leaderboard</a>
+  <p>Login to access the forum.</p>
+  <a href="/login" class="btn btn-primary">Login</a>
+  <a href="/register" class="btn btn-primary">Register</a>
   {{/if}}
+  <a href="/leaderboard" class="btn btn-primary">Leaderboard</a>
+</div>
+
+<div class="login-page-container">
+  <h1>What's Going On!</h1>
+
+  <h2>Most Recent Events</h2>
+  <ol>
+    {{#each recent_events}}
+    <li><a href="/events/{{_id}}">{{title}}</a></li>
+    {{/each}}
+  </ol>
+
+  <p>We've got plenty more going on! See our <a href="/events">Event Feed here</a>.</p>
+
+  <h2>Top Users</h2>
+  <ol>
+    {{#each top_users}}
+    <li><a href="/api/v1/users/{{_id}}">{{username}}</a>- {{account_stats.points}} points</li>
+    {{/each}}
+  </ol>
+
+  <p>See more of our most active users on the <a href="/leaderboard">Leaderboard page</a>!</p>
 </div>

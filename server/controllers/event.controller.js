@@ -1,7 +1,7 @@
 import Event from "../models/event.model.js";
 import EventRegistration from "../models/eventreg.model.js";
 import { formatDateTimeLocal } from "../utils/helpers.js";
-
+import Comment from "../models/comments.model.js";
 // @desc     Create new event
 // @route    POST /api/events
 // @access   Private
@@ -27,9 +27,11 @@ export const newEvent = async (req, res) => {
       ],
     });
     if (eventExists) {
-      return res.status(400).json({
-        message:
-          "You have already created an upcoming or ongoing event with this title.",
+      return res.status(400).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `You have already created an upcoming or ongoing event with this title.`,
       });
     }
 
@@ -49,7 +51,12 @@ export const newEvent = async (req, res) => {
     res.redirect(`/events/${event._id}`);
   } catch (err) {
     console.error("New event error:", err.message);
-    res.status(500).json({ message: "Internal server error." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Internal server error.`,
+    });
   }
 };
 
@@ -59,23 +66,74 @@ export const newEvent = async (req, res) => {
 
 export const getEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id).lean();
+    const eventId = req.params.id;
 
+    const event = await Event.findById(eventId).lean();
     if (!event) {
-      return res.status(404).json({ message: "Event not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event not found.`,
+      });
     }
 
     const formatted_start_time = formatDateTimeLocal(event.start_time);
     const formatted_end_time = formatDateTimeLocal(event.end_time);
 
+    const comments = await Comment.getEventComments(
+      eventId,
+      1, // page
+      20, // limit
+    );
+
+    const commentsWithReplies = await comments.map(async (comment) => {
+      const c = comment.toObject ? comment.toObject() : comment;
+      const replies = await Comment.getCommentReplies(comment._id, 1, 10);
+
+      const replies2 = replies.map((r) => {
+        const rr = r.toObject ? r.toObject() : r;
+        return {
+          ...rr,
+          id: rr._id.toString(),
+          user_id_str: rr.user_id._id.toString(),
+        };
+      });
+
+      return {
+        ...c,
+        id: c._id.toString(),
+        user_id_str: c.user_id._id.toString(),
+        replies: replies2,
+      };
+    });
+
+    const sUser = req.user
+      ? {
+          ...req.user.toObject(),
+          id: req.user._id.toString(),
+        }
+      : null;
+
+    console.log(commentsWithReplies);
     res.json({
+      page_title: `${event.title} | Volunteer Forum`,
+      logged_in: Boolean(req.user),
+      user: sUser, // added by Julian
+      user_id: req.user ? req.user._id : null,
       ...event,
       formatted_start_time,
       formatted_end_time,
+      comments: commentsWithReplies, //added by Julian
     });
   } catch (err) {
     console.error("Get event error:", err.message);
-    res.status(500).json({ message: "Unable to fetch event." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to fetch event.`,
+    });
   }
 };
 
@@ -104,7 +162,12 @@ export const getEvents = async (req, res) => {
     res.json(eventFeed);
   } catch (err) {
     console.error("Get events error:", err.message);
-    res.status(500).json({ message: "Unable to fetch events." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to fetch events.`,
+    });
   }
 };
 
@@ -123,9 +186,19 @@ export const updateEventDetails = async (req, res) => {
 
     const event = await Event.findById(req.params.id);
     if (!event) {
-      return res.status(404).json({ message: "Event not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event not found.`,
+      });
     } else if (!req.user.is_admin && !event.organizer_id.equals(req.user._id)) {
-      return res.status(403).json({ message: "User does not own this event." });
+      return res.status(403).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `User does not own this event.`,
+      });
     }
 
     const updatedEvent = await Event.findByIdAndUpdate(req.params.id, updates, {
@@ -133,13 +206,23 @@ export const updateEventDetails = async (req, res) => {
     });
 
     if (!updatedEvent) {
-      return res.status(404).json({ message: "Event not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event not found.`,
+      });
     }
 
     res.redirect(`/events/${event._id}`);
   } catch (err) {
     console.error("Update event details error:", err.message);
-    res.status(500).json({ message: "Unable to update event details." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to update event details.`,
+    });
   }
 };
 
@@ -159,17 +242,27 @@ export const disableEvent = async (req, res) => {
       disabled_data,
       {
         new: true,
-      }
+      },
     );
 
     if (!disabledEvent) {
-      return res.status(404).json({ message: "Event not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event not found.`,
+      });
     }
 
     res.json(disabledEvent);
   } catch (err) {
     console.error("Disable event error:", err.message);
-    res.status(500).json({ message: "Unable to disable event." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to disable event.`,
+    });
   }
 };
 
@@ -181,17 +274,32 @@ export const deleteEvent = async (req, res) => {
     const event = await Event.findById(req.params.id);
 
     if (!event) {
-      return res.status(404).json({ message: "Event not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event not found.`,
+      });
     } else if (!req.user.is_admin && !event.organizer_id.equals(req.user._id)) {
-      return res.status(403).json({ message: "User does not own this event." });
+      return res.status(403).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `User does not own this event.`,
+      });
     }
 
     await event.deleteOne();
 
-    res.json(event);
+    res.redirect("/events");
   } catch (err) {
     console.error("Delete event error:", err.message);
-    res.status(500).json({ message: "Unable to delete event." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to delete event.`,
+    });
   }
 };
 

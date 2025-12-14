@@ -53,7 +53,12 @@ export const isAdmin = (req, res, next) => {
   if (req.user?.is_admin) {
     next();
   } else {
-    res.status(403).json({ message: "Not authorized as admin." });
+    return res.status(403).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Not authorized as admin.`,
+    });
   }
 };
 
@@ -61,11 +66,21 @@ export const isAdminOrTargetUser = (req, res, next) => {
   if (req.user?.is_admin) {
     next();
   } else if (!req.params?.id) {
-    res.status(404).json({ message: "Target ID is not set." });
-  } else if (req.params.id === req.user?._id) {
+    return res.status(404).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Target ID is not set.`,
+    });
+  } else if (req.params.id === req.user?._id.toString()) {
     next();
   } else {
-    res.status(403).json({ message: "Not authorized to view this resource" });
+    return res.status(403).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Not authorized to view this resource`,
+    });
   }
 };
 
@@ -73,19 +88,32 @@ export const isAdminOrEventOrganizer = async (req, res, next) => {
   if (req.user?.is_admin) {
     next();
   } else if (!req.params?.id) {
-    res.status(404).json({ message: "Target ID is not set." });
+    return res.status(404).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Target ID is not set.`,
+    });
   } else {
     try {
       const event = await Event.findById(req.params.id).select("organizer_id");
-      if (event.organizer_id === req.user._id) {
+      if (event.organizer_id.toString() === req.user._id.toString()) {
         next();
       } else {
-        return res
-          .status(403)
-          .json({ message: "Not authorized to view this resource" });
+        return res.status(403).render("error", {
+          page_title: "Register | Volunteer Forum",
+          logged_in: Boolean(req.user),
+          user_id: req.user ? req.user._id : null,
+          message: `Not authorized to view this resource`,
+        });
       }
     } catch (_) {
-      res.status(403).json({ message: "Not authorized to view this resource" });
+      return res.status(403).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Not authorized to view this resource`,
+      });
     }
   }
 };

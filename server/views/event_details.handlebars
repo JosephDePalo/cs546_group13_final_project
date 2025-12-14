@@ -4,13 +4,13 @@
 </a>
 <div class="actions">
   {{#if isRegistered}}
-    <button id="register-btn" data-event-id="{{_id}}" class="btn btn-danger">
-      Unregister
-    </button>
+  <button id="register-btn" data-event-id="{{_id}}" class="btn btn-danger">
+    Unregister
+  </button>
   {{else}}
-    <button id="register-btn" data-event-id="{{_id}}" class="btn btn-primary">
-      Register
-    </button>
+  <button id="register-btn" data-event-id="{{_id}}" class="btn btn-primary">
+    Register
+  </button>
   {{/if}}
 
   <div id="register-error"></div>
@@ -78,14 +78,89 @@
 
 </section>
 
+
+<hr>
+
+{{!-- ===================== COMMENTS ===================== --}}
+
+<section class="comments-section">
+
+  <h2>Comments</h2>
+
+  {{!-- Comment Form --}}
+  {{> comment_form event=this user=user}}
+
+  <hr>
+
+  {{!-- Comment List --}}
+  <div class="comment-list">
+    {{#if comments.length}}
+    {{#each comments}}
+    {{> comment_item this user=../user}}
+    {{/each}}
+    {{else}}
+    <p>No comments yet.</p>
+    {{/if}}
+  </div>
+
+</section>
+
+
 <div class="actions">
+  {{#if is_owner_or_admin}}
   <a href="/event/manage/{{_id}}" class="btn btn-primary">
     Manage Event
   </a>
+  <form action="/api/v1/events/{{_id}}?_method=DELETE" method="POST" id="delete-form">
+    <button type="submit" class="btn btn-primary">Delete Event</button>
+  </form>
+  {{/if}}
 
   <a href="/events" class="btn btn-primary">
     Back to Events
   </a>
 </div>
 
+{{!-- ===================== SCRIPTS ===================== --}}
 <script src="/js/eventreg.clientside.js"></script>
+<script src="/js/comment.validation.js"></script>
+
+<script>
+  /**
+   * Reply button handler
+   * Fit for AJAX
+   */
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.reply-btn');
+    if (!btn) return;
+
+    const parentId = btn.dataset.parentId;
+    const parentInput = document.getElementById('parent_comment_id');
+    const contentInput = document.getElementById('content');
+
+    if (parentInput && contentInput) {
+      parentInput.value = parentId;
+      contentInput.focus();
+    }
+
+    contentInput.focus();
+    contentInput.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
+  });
+
+  document.getElementById("delete-form").addEventListener("click", (e) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this event?",
+    );
+
+    if (!confirmed) {
+      e.preventDefault(); // stop form submit / link
+      return;
+    }
+
+    // continue with action
+  });
+
+</script>
