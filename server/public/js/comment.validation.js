@@ -115,6 +115,7 @@
       contentInput.value = "";
       parentIdInput && (parentIdInput.value = "");
       clearError();
+      location.reload();
     } catch (err) {
       console.error(err);
       showError("Network error. Please try again.");
