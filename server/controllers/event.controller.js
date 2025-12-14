@@ -1,7 +1,9 @@
 import Event from "../models/event.model.js";
 import EventRegistration from "../models/eventreg.model.js";
+import User from "../models/user.model.js";
 import { formatDateTimeLocal } from "../utils/helpers.js";
 import Comment from "../models/comments.model.js";
+
 // @desc     Create new event
 // @route    POST /api/events
 // @access   Private
@@ -306,11 +308,13 @@ export const deleteEvent = async (req, res) => {
 // @desc     Reward all registered users for an event
 // @route    POST /api/events/:id/rewardRegisteredUsers
 // @access   Admin / Event Organizer
+const EVENT_REWARD_POINTS = 10;
+
 export const rewardRegisteredUsers = async (req, res) => {
   try {
     const eventId = req.params.id;
 
-    const event = await Event.findById(eventId).lean();
+    const event = await Event.findById(eventId);
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
     }
@@ -324,23 +328,33 @@ export const rewardRegisteredUsers = async (req, res) => {
     const registrations = await EventRegistration.find({
       event_id: eventId,
       cancelled: false,
+      rewarded: false,
     });
 
     if (registrations.length === 0) {
-      return res.json({ message: "No registered users to reward." });
+      return res.json({ message: "No users to reward." });
     }
 
     for (const reg of registrations) {
+      // Update user stats
+      await User.findByIdAndUpdate(reg.user_id, {
+        $inc: {
+          "account_stats.points": EVENT_REWARD_POINTS,
+          "account_stats.events_attended_count": 1,
+        },
+      });
+
+      // Mark registration as rewarded
       reg.rewarded = true;
       await reg.save();
     }
 
     return res.json({
-      message: "Registered users rewarded successfully.",
+      message: "Users rewarded successfully.",
       rewarded_count: registrations.length,
     });
   } catch (err) {
-    console.error("Reward registered users error:", err.message);
-    res.status(500).json({ message: "Unable to reward registered users." });
+    console.error("Reward registered users error:", err);
+    res.status(500).json({ message: "Unable to reward users." });
   }
 };

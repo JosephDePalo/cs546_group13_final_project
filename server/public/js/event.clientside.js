@@ -46,7 +46,7 @@
     }
     if (!title.value.trim().match(/^[a-zA-Z0-9_-\s]+$/)) {
       put_error(
-        "Error: title must be only letters, numbers, spaces, _, and -!"
+        "Error: title must be only letters, numbers, spaces, _, and -!",
       );
     }
 
@@ -119,7 +119,7 @@
       }
       if (!location_url.value.trim().match(/^https?:\/\//)) {
         put_error(
-          "Error: location url must start with 'http://' or 'https://'!"
+          "Error: location url must start with 'http://' or 'https://'!",
         );
       }
     }
@@ -142,12 +142,13 @@
             headers: {
               "Content-Type": "application/json",
             },
-          }
+          },
         );
         if (!res.ok) {
           throw new Error("Failed to reward users");
         }
         alert("Registered users rewarded successfully");
+        window.location.reload();
       } catch (err) {
         console.error(err);
         alert("Error rewarding registered users");

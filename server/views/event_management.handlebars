@@ -85,16 +85,26 @@
 
 {{#if registrations.length}}
 
-  {{#if (eq status "Completed")}}
+{{#if (eq status "Completed")}}
+  {{#if alreadyRewarded}}
+    <button
+      type="button"
+      class="btn btn-secondary"
+      disabled
+    >
+      Users Already Rewarded
+    </button>
+  {{else}}
     <button
       type="button"
       id="reward-users-btn"
-      class="btn btn-primary"
       data-event-id="{{_id}}"
+      class="btn btn-primary"
     >
       Reward Registered Users
     </button>
   {{/if}}
+{{/if}}
 
   <ol>
     {{#each registrations}}

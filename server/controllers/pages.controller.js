@@ -96,8 +96,9 @@ export const renderEvent = async (req, res) => {
       logged_in: Boolean(req.user),
       user_id: req.user ? req.user._id : null,
       is_owner_or_admin:
-        req.user.is_admin ||
-        req.user?._id.toString() === event.organizer_id.toString(),
+        req.user &&
+        (req.user.is_admin ||
+          req.user._id.toString() === event.organizer_id.toString()),
       isRegistered,
       ...event,
       formatted_start_time,
@@ -203,6 +204,10 @@ export const renderEventManagement = async (req, res) => {
       .populate("user_id", "username email")
       .lean();
 
+    const alreadyRewarded =
+      registrations.length > 0 &&
+      registrations.every((r) => r.rewarded === true);
+
     res.render("event_management", {
       page_title: "Event Management | Volunteer Forum",
       logged_in: Boolean(req.user),
@@ -211,6 +216,7 @@ export const renderEventManagement = async (req, res) => {
       formatted_start_time,
       formatted_end_time,
       registrations,
+      alreadyRewarded,
     });
   } catch (err) {
     console.error("renderEventManagement error: " + err.message);
