@@ -1,5 +1,5 @@
-<div class="comment" data-comment-id="{{_id}}">
-
+<div class="comment {{#if parent_comment_id}}comment-reply{{/if}}" {{!--To make sure comment and sub-comment have
+  different layout--}} data-comment-id="{{id}}">
   <div class="comment-header">
     <strong>{{user_id.username}}</strong>
   </div>
@@ -12,24 +12,30 @@
     <small>{{created_at}}</small>
 
     {{!-- Only logged-in users can reply. --}}
-    {{#if ../user}}
-      <button
-        type="button"
-        class="reply-btn"
-        data-parent-id="{{_id}}"
-      >
-        Reply
-      </button>
+    {{#if user}}
+    <button type="button" class="reply-btn" data-parent-id="{{id}}">
+      Reply
+    </button>
     {{/if}}
   </div>
 
   {{!-- Sub-comment --}}
   {{#if replies}}
-    <div class="comment-replies">
-      {{#each replies}}
-        {{> comment_item this user=../user}}
-      {{/each}}
-    </div>
+  <div class="comment-replies">
+    {{#each replies}}
+    {{> comment_item this user=../user}}
+    {{/each}}
+  </div>
+  {{/if}}
+
+
+  {{!-- delete --}}
+  {{#if user}}
+  {{#if (eq user.id user_id_str)}}
+  <button type="button" class="delete-btn" data-comment-id="{{id}}">
+    Delete
+  </button>
+  {{/if}}
   {{/if}}
 
 </div>

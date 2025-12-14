@@ -75,17 +75,38 @@ export const getEvent = async (req, res) => {
     );
 
     const commentsWithReplies = await comments.map(async (comment) => {
+      const c = comment.toObject ? comment.toObject() : comment;
       const replies = await Comment.getCommentReplies(comment._id, 1, 10);
+
+      const replies2 = replies.map((r) => {
+        const rr = r.toObject ? r.toObject() : r;
+        return {
+          ...rr,
+          id: rr._id.toString(),
+          user_id_str: rr.user_id._id.toString(),
+        };
+      });
+
       return {
-        ...comment.toObject(),
-        replies,
+        ...c,
+        id: c._id.toString(),
+        user_id_str: c.user_id._id.toString(),
+        replies: replies2,
       };
     });
 
+    const sUser = req.user
+      ? {
+          ...req.user.toObject(),
+          id: req.user._id.toString(),
+        }
+      : null;
+
+    console.log(commentsWithReplies);
     res.json({
       page_title: `${event.title} | Volunteer Forum`,
       logged_in: Boolean(req.user),
-      user: req.user || null, // added by Julian
+      user: sUser, // added by Julian
       user_id: req.user ? req.user._id : null,
       ...event,
       formatted_start_time,
