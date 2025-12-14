@@ -34,3 +34,25 @@ h1 {
   background-color: #007bff;
   color: #fff;
 }
+
+.event-management-section {
+  display: flex;
+  justify-content: space-between;
+  /* gap: 40px; */
+}
+
+#overview-edit-form {
+  flex: 2;
+}
+
+.registered-users {
+  flex: 1;
+}
+
+.registered-users ol {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+  border: 1px solid #f1f0f0;
+  border-radius: 4px;
+}

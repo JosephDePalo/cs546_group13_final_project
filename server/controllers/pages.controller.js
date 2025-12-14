@@ -126,6 +126,13 @@ export const renderEventManagement = async (req, res) => {
     const formatted_start_time = formatDateTimeLocal(event.start_time);
     const formatted_end_time = formatDateTimeLocal(event.end_time);
 
+    const registrations = await EventRegistration.find({
+      event_id: req.params.id,
+      cancelled: false,
+    })
+      .populate("user_id", "username email")
+      .lean();
+
     res.render("event_management", {
       page_title: "Event Management | Volunteer Forum",
       logged_in: Boolean(req.user),
@@ -133,6 +140,7 @@ export const renderEventManagement = async (req, res) => {
       ...event,
       formatted_start_time,
       formatted_end_time,
+      registrations,
     });
   } catch (err) {
     console.error("renderEventManagement error: " + err.message);

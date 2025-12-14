@@ -46,7 +46,7 @@
     }
     if (!title.value.trim().match(/^[a-zA-Z0-9_-\s]+$/)) {
       put_error(
-        "Error: title must be only letters, numbers, spaces, _, and -!",
+        "Error: title must be only letters, numbers, spaces, _, and -!"
       );
     }
 
@@ -119,7 +119,7 @@
       }
       if (!location_url.value.trim().match(/^https?:\/\//)) {
         put_error(
-          "Error: location url must start with 'http://' or 'https://'!",
+          "Error: location url must start with 'http://' or 'https://'!"
         );
       }
     }
@@ -128,4 +128,30 @@
       edit_form.submit();
     }
   });
+
+  const rewardBtn = document.getElementById("reward-users-btn");
+
+  if (rewardBtn) {
+    rewardBtn.addEventListener("click", async () => {
+      const eventId = rewardBtn.dataset.eventId;
+      try {
+        const res = await fetch(
+          `/api/v1/events/${eventId}/rewardRegisteredUsers`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!res.ok) {
+          throw new Error("Failed to reward users");
+        }
+        alert("Registered users rewarded successfully");
+      } catch (err) {
+        console.error(err);
+        alert("Error rewarding registered users");
+      }
+    });
+  }
 })(jQuery);

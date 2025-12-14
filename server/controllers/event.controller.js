@@ -1,4 +1,5 @@
 import Event from "../models/event.model.js";
+import EventRegistration from "../models/eventreg.model.js";
 import { formatDateTimeLocal } from "../utils/helpers.js";
 
 // @desc     Create new event
@@ -158,7 +159,7 @@ export const disableEvent = async (req, res) => {
       disabled_data,
       {
         new: true,
-      },
+      }
     );
 
     if (!disabledEvent) {
@@ -191,5 +192,47 @@ export const deleteEvent = async (req, res) => {
   } catch (err) {
     console.error("Delete event error:", err.message);
     res.status(500).json({ message: "Unable to delete event." });
+  }
+};
+
+// @desc     Reward all registered users for an event
+// @route    POST /api/events/:id/rewardRegisteredUsers
+// @access   Admin / Event Organizer
+export const rewardRegisteredUsers = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+
+    const event = await Event.findById(eventId).lean();
+    if (!event) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    if (event.status !== "Completed") {
+      return res
+        .status(400)
+        .json({ message: "Event must be completed before rewarding users." });
+    }
+
+    const registrations = await EventRegistration.find({
+      event_id: eventId,
+      cancelled: false,
+    });
+
+    if (registrations.length === 0) {
+      return res.json({ message: "No registered users to reward." });
+    }
+
+    for (const reg of registrations) {
+      reg.rewarded = true;
+      await reg.save();
+    }
+
+    return res.json({
+      message: "Registered users rewarded successfully.",
+      rewarded_count: registrations.length,
+    });
+  } catch (err) {
+    console.error("Reward registered users error:", err.message);
+    res.status(500).json({ message: "Unable to reward registered users." });
   }
 };
