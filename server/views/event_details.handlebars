@@ -4,13 +4,13 @@
 </a>
 <div class="actions">
   {{#if isRegistered}}
-    <button id="register-btn" data-event-id="{{_id}}" class="btn btn-danger">
-      Unregister
-    </button>
+  <button id="register-btn" data-event-id="{{_id}}" class="btn btn-danger">
+    Unregister
+  </button>
   {{else}}
-    <button id="register-btn" data-event-id="{{_id}}" class="btn btn-primary">
-      Register
-    </button>
+  <button id="register-btn" data-event-id="{{_id}}" class="btn btn-primary">
+    Register
+  </button>
   {{/if}}
 
   <div id="register-error"></div>
@@ -78,6 +78,34 @@
 
 </section>
 
+
+<hr>
+
+{{!-- ===================== COMMENTS ===================== --}}
+
+<section class="comments-section">
+
+  <h2>Comments</h2>
+
+  {{!-- Comment Form --}}
+  {{> commentForm event=this user=user}}
+
+  <hr>
+
+  {{!-- Comment List --}}
+  <div class="comment-list">
+    {{#if comments.length}}
+    {{#each comments}}
+    {{> commentItem this user=../user}}
+    {{/each}}
+    {{else}}
+    <p>No comments yet.</p>
+    {{/if}}
+  </div>
+
+</section>
+
+
 <div class="actions">
   <a href="/event/manage/{{_id}}" class="btn btn-primary">
     Edit Event
@@ -89,3 +117,25 @@
 </div>
 
 <script src="/js/eventreg.clientside.js"></script>
+{{!-- ===================== SCRIPTS ===================== --}}
+<script src="/public/js/comment.validation.js"></script>
+
+<script>
+  /**
+   * Reply button handler
+   * Fills parent_comment_id in the single comment form
+   */
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.reply-btn');
+    if (!btn) return;
+
+    const parentId = btn.dataset.parentId;
+    const parentInput = document.getElementById('parent_comment_id');
+    const contentInput = document.getElementById('content');
+
+    if (parentInput && contentInput) {
+      parentInput.value = parentId;
+      contentInput.focus();
+    }
+  });
+</script>

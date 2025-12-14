@@ -4,6 +4,7 @@ import userRoutes from "./routes/user.routes.js";
 import eventRoutes from "./routes/event.routes.js";
 import pageRoutes from "./routes/pages.routes.js";
 import reportRoutes from "./routes/report.routes.js";
+import commentRoutes from "./routes/comments.routes.js";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import exphbs from "express-handlebars";
@@ -17,6 +18,7 @@ const app = express();
 
 const hbs = exphbs.create({
   defaultLayout: "main",
+  partialsDir: ["views/partials"],
   helpers: {
     eq: (x, y) => x === y,
   },
@@ -48,6 +50,7 @@ app.use("/api", cors());
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/reports", reportRoutes);
+app.use("/api", commentRoutes);
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
