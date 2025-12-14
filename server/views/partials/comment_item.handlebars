@@ -13,23 +13,19 @@
 
     {{!-- Only logged-in users can reply. --}}
     {{#if ../user}}
-      <button
-        type="button"
-        class="reply-btn"
-        data-parent-id="{{_id}}"
-      >
-        Reply
-      </button>
+    <button type="button" class="reply-btn" data-parent-id="{{_id}}">
+      Reply
+    </button>
     {{/if}}
   </div>
 
   {{!-- Sub-comment --}}
   {{#if replies}}
-    <div class="comment-replies">
-      {{#each replies}}
-        {{> comment_item this user=../user}}
-      {{/each}}
-    </div>
+  <div class="comment-replies">
+    {{#each replies}}
+    {{> comment_item this user=../user}}
+    {{/each}}
+  </div>
   {{/if}}
 
 </div>
