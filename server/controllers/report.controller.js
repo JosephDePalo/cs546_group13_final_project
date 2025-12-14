@@ -49,7 +49,7 @@ export const newReport = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      redirectTo: `/${target_type}/${target_id}`,
+      redirectTo: `/${target_type}s/${target_id}`,
     });
   } catch (err) {
     if (err.code === 11000) {

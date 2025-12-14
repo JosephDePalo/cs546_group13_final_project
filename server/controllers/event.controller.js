@@ -67,10 +67,7 @@ export const getEvent = async (req, res) => {
     const formatted_start_time = formatDateTimeLocal(event.start_time);
     const formatted_end_time = formatDateTimeLocal(event.end_time);
 
-    res.render("event_details", {
-      page_title: `${event.title} | Volunteer Forum`,
-      logged_in: Boolean(req.user),
-      user_id: req.user ? req.user._id : null,
+    res.json({
       ...event,
       formatted_start_time,
       formatted_end_time,
@@ -91,11 +88,8 @@ export const getEvents = async (req, res) => {
     const events = await Event.getEvents(page, limit).lean();
     const eventCount = await Event.countDocuments();
     const pageCount = Math.ceil(eventCount / limit);
-    res.render("event_feed", {
+    const eventFeed = {
       events,
-      page_title: "Event Feed | Volunteer Forum",
-      logged_in: Boolean(req.user),
-      user_id: req.user ? req.user._id : null,
       page_details: {
         is_next_page: pageCount > page,
         next_page: parseInt(page) + 1,
@@ -104,7 +98,9 @@ export const getEvents = async (req, res) => {
         current_page: page,
         page_limit: limit,
       },
-    });
+    };
+
+    res.json(eventFeed);
   } catch (err) {
     console.error("Get events error:", err.message);
     res.status(500).json({ message: "Unable to fetch events." });

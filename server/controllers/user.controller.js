@@ -24,7 +24,7 @@ export const login = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
     });
 
-    return res.redirect("/api/v1/events");
+    return res.redirect("/events");
   } catch (err) {
     console.error("Login error:", err.message);
     return res.status(500).json({
