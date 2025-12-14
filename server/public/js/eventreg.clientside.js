@@ -6,7 +6,6 @@ const showRegisterError = (message) => {
 };
 
 registerButton.addEventListener("click", async () => {
-  console.log("HEY");
   const eventId = registerButton.dataset.eventId;
   if (!eventId) {
     showRegisterError("Invalid event.");

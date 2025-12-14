@@ -48,7 +48,7 @@ export const newEventRegistration = async (req, res) => {
       registered_at: new Date(),
     });
 
-    // Increaase registration count
+    // Increase registration count
     event.registrations_count += 1;
     await event.save();
 
@@ -77,7 +77,7 @@ export const getEventRegistration = async (req, res) => {
   }
 };
 
-// @desc     Get EventRegistration
+// @desc     Get All EventRegistrations for an Event
 // @access   Public
 
 export const getAllEventRegistrations = async (req, res) => {
