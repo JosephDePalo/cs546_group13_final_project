@@ -83,6 +83,9 @@ export const renderEvent = async (req, res) => {
       page_title: `${event.title} | Volunteer Forum`,
       logged_in: Boolean(req.user),
       user_id: req.user ? req.user._id : null,
+      is_owner_or_admin:
+        req.user.is_admin ||
+        req.user?._id.toString() === event.organizer_id.toString(),
       isRegistered,
       ...event,
       formatted_start_time,
