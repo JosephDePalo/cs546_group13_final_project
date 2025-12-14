@@ -1,4 +1,5 @@
 /* global jQuery, $ */
+import xss from "xss";
 
 (function ($) {
   let signup_form = document.getElementById("signup-form");
@@ -178,7 +179,28 @@
       errors_count++;
     }
 
+    // confirm password checks
+
+    console.log("confirm password reached!");
+    if (confirm_password.value !== password.value) {
+      let error_message = document.createElement("dd");
+      error_message.append(
+        "Error: confirm_password must be the same as password!",
+      );
+      errors.appendChild(error_message);
+      $(errors).show();
+      errors_count++;
+    }
+
+    // XSS validation
+
+    let validated_username = xss(username.value.trim());
+    let validated_email = xss(email.value.trim());
+
     if (errors_count === 0) {
+      username.value = validated_username;
+      email.value = validated_email;
+
       signup_form.submit();
     }
   });
