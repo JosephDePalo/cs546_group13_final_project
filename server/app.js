@@ -57,7 +57,12 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ message: `Resource ${req.originalUrl} not found` });
+  res.status(404).render("error", {
+    page_title: "Register | Volunteer Forum",
+    logged_in: Boolean(req.user),
+    user_id: req.user ? req.user._id : null,
+    message: `Resource ${req.originalUrl} not found`,
+  });
 });
 
 export default app;

@@ -18,7 +18,12 @@ export const renderEvent = async (req, res) => {
     const event = await Event.findById(eventId).lean();
 
     if (!event) {
-      return res.status(404).json({ message: "Event not found." });
+      return res.status(404).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `Event not found.`,
+      });
     }
 
     const formatted_start_time = formatDateTimeLocal(event.start_time);
@@ -87,7 +92,12 @@ export const renderEvent = async (req, res) => {
     });
   } catch (err) {
     console.error("Get event error:", err.message);
-    res.status(500).json({ message: "Unable to fetch event." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to fetch event.`,
+    });
   }
 };
 
@@ -113,7 +123,12 @@ export const renderEventsList = async (req, res) => {
     });
   } catch (err) {
     console.error("Get events error:", err.message);
-    res.status(500).json({ message: "Unable to fetch events." });
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to fetch events.`,
+    });
   }
 };
 
@@ -176,7 +191,12 @@ export const renderEventManagement = async (req, res) => {
     });
   } catch (err) {
     console.error("renderEventManagement error: " + err.message);
-    res.status(404).json({ error: "event does not exist" });
+    return res.status(404).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Event does not exist`,
+    });
   }
 };
 
