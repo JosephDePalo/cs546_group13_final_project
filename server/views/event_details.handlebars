@@ -2,6 +2,20 @@
 <a href="/report/event/{{_id}}" class="btn btn-warning">
   Report Event
 </a>
+<div class="actions">
+  {{#if isRegistered}}
+    <button id="register-btn" data-event-id="{{_id}}" class="btn btn-danger">
+      Unregister
+    </button>
+  {{else}}
+    <button id="register-btn" data-event-id="{{_id}}" class="btn btn-primary">
+      Register
+    </button>
+  {{/if}}
+
+  <div id="register-error"></div>
+
+</div>
 
 <section class="event-details">
 
@@ -73,3 +87,5 @@
     Back to Events
   </a>
 </div>
+
+<script src="/js/eventreg.clientside.js"></script>
