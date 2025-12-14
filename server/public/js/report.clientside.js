@@ -61,7 +61,7 @@
 
       // Handling redirect
       if (data.redirectTo) {
-        window.location.href = "/api/v1" + data.redirectTo;
+        window.location.href = data.redirectTo;
       }
     } catch (err) {
       console.error(err);

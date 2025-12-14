@@ -45,7 +45,7 @@ export const newEvent = async (req, res) => {
       state,
     });
 
-    res.redirect(`/api/v1/events/${event._id}`);
+    res.redirect(`/events/${event._id}`);
   } catch (err) {
     console.error("New event error:", err.message);
     res.status(500).json({ message: "Internal server error." });
@@ -139,7 +139,7 @@ export const updateEventDetails = async (req, res) => {
       return res.status(404).json({ message: "Event not found." });
     }
 
-    res.redirect(`/api/v1/events/${event._id}`);
+    res.redirect(`/events/${event._id}`);
   } catch (err) {
     console.error("Update event details error:", err.message);
     res.status(500).json({ message: "Unable to update event details." });
