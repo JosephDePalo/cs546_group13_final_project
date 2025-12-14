@@ -2,39 +2,37 @@ import express from "express";
 import {
   register,
   login,
-  getUserProfile,
-  updateUserProfile,
-  updatePassword,
   getUsers,
   getUserById,
   deleteUser,
   logout,
   updateUserById,
 } from "../controllers/user.controller.js";
-import { protect, admin } from "../middlewares/auth.middleware.js";
+import {
+  isLoggedIn,
+  isAdminOrTargetUser,
+  isNotLoggedIn,
+} from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// Public routes
-router.post("/register", register);
-router.post("/login", login);
-router.get("/logout", logout);
+router.post("/register", isNotLoggedIn, register);
+router.post("/login", isNotLoggedIn, login);
+router.get("/logout", isLoggedIn, logout);
 
-// Private routes
-router
-  .route("/profile")
-  .get(protect, getUserProfile)
-  .put(protect, updateUserProfile);
+// router
+//   .route("/profile")
+//   .get(isLoggedIn, getUserProfile)
+//   .put(isLoggedIn, updateUserProfile);
 
-router.put("/password", protect, updatePassword);
+// router.put("/password", isLoggedIn, updatePassword);
 
-// Admin routes
-router.get("/", protect, admin, getUsers);
+router.get("/", isLoggedIn, getUsers);
 
 router
   .route("/:id")
-  .get(protect, admin, getUserById)
-  .delete(protect, admin, deleteUser)
-  .put(protect, admin, updateUserById);
+  .get(isLoggedIn, getUserById)
+  .delete(isLoggedIn, isAdminOrTargetUser, deleteUser)
+  .put(isLoggedIn, isAdminOrTargetUser, updateUserById);
 
 export default router;

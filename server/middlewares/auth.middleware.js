@@ -1,50 +1,91 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
+import Event from "../models/event.model.js";
 
-export const protect = async (req, res, next) => {
+export const setUserInfo = async (req, res, next) => {
+  let token;
+
+  if (req.cookies?.Authorization) {
+    token = req.cookies.Authorization;
+  } else if (req.headers.authorization) {
+    token = req.headers.authorization;
+    if (token.startsWith("Bearer ")) {
+      token = token.split(" ")[1];
+    }
+  }
+
+  if (!token) {
+    req.user = null;
+    return next();
+  }
+
   try {
-    let token;
-
-    if (req.cookies?.Authorization) {
-      token = req.cookies.Authorization;
-    } else if (req.headers.authorization) {
-      token = req.headers.authorization;
-      if (token.startsWith("Bearer ")) {
-        token = token.split(" ")[1];
-      }
-    }
-
-    if (!token) {
-      return handleAuthFailure(req, res);
-    }
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(decoded.id).select("-password_hash -otp");
     if (!user) {
-      return handleAuthFailure(req, res);
+      req.user = null;
     }
-
     req.user = user;
+  } catch (_) {
+    req.user = null;
+  }
+  next();
+};
+
+export const isLoggedIn = async (req, res, next) => {
+  if (req.user) {
     next();
-  } catch (err) {
-    console.error("Auth error:", err.message);
-    return handleAuthFailure(req, res);
+  } else {
+    res.status(401).redirect("/login");
   }
 };
 
-// Helper: decide redirect vs JSON
-const handleAuthFailure = (req, res) => {
-  if (!req.originalUrl.startsWith("/api")) {
-    return res.redirect("/home");
+export const isNotLoggedIn = async (req, res, next) => {
+  if (!req.user) {
+    next();
+  } else {
+    res.redirect("/home");
   }
-  return res.status(401).json({ message: "Not authorized." });
 };
 
-export const admin = (req, res, next) => {
-  if (req.user && req.user.is_admin) {
+export const isAdmin = (req, res, next) => {
+  if (req.user?.is_admin) {
     next();
   } else {
     res.status(403).json({ message: "Not authorized as admin." });
+  }
+};
+
+export const isAdminOrTargetUser = (req, res, next) => {
+  if (req.user?.is_admin) {
+    next();
+  } else if (!req.params?.id) {
+    res.status(404).json({ message: "Target ID is not set." });
+  } else if (req.params.id === req.user?._id) {
+    next();
+  } else {
+    res.status(403).json({ message: "Not authorized to view this resource" });
+  }
+};
+
+export const isAdminOrEventOrganizer = async (req, res, next) => {
+  if (req.user?.is_admin) {
+    next();
+  } else if (!req.params?.id) {
+    res.status(404).json({ message: "Target ID is not set." });
+  } else {
+    try {
+      const event = await Event.findById(req.params.id).select("organizer_id");
+      if (event.organizer_id === req.user._id) {
+        next();
+      } else {
+        return res
+          .status(403)
+          .json({ message: "Not authorized to view this resource" });
+      }
+    } catch (_) {
+      res.status(403).json({ message: "Not authorized to view this resource" });
+    }
   }
 };
