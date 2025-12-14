@@ -38,6 +38,111 @@ export const newReport = async (req, res) => {
       return res.status(400).json({ message: "You cannot report yourself." });
     }
 
+    switch (target_type) {
+      case "event":
+        let num_reports_events = 0;
+        let desired_events = await Report.find({
+          target_type: "event",
+          target_id: target_id 
+        });
+
+        num_reports_events = desired_events.length;
+        if ((num_reports_events + 1) >= 2) {
+            try {
+                let disabled_data = {
+                    disabled: true,
+                    disabled_at: new Date(),
+                };
+
+                const disabledEvent = await Event.findByIdAndUpdate(
+                    target_id,
+                    disabled_data,
+                    {
+                        new: true,
+                    },
+                );
+
+                if (!disabledEvent) {
+                    return res.status(404).json({ message: "Event not found." });
+                }
+
+            } catch (err) {
+                console.error("Disable event error:", err.message);
+                res.status(500).json({ message: "Unable to disable event." });
+            }
+        }
+        break;
+      case "comment":
+        let num_reports_comments = 0;
+        let desired_comments = await Report.find({
+            target_type: "comment",
+            target_id: target_id 
+          });
+
+        num_reports_comments = desired_comments.length; 
+        if ((num_reports_comments + 1) >= 2) {
+            try {
+                let disabled_data = {
+                    disabled: true,
+                    disabled_reason: reason,
+                    disabled_at: new Date(),
+                };
+
+                const disabledComment = await Comment.findByIdAndUpdate(
+                    target_id,
+                    disabled_data,
+                    {
+                        new: true,
+                    },
+                );
+
+                if (!disabledComment) {
+                    return res.status(404).json({ message: "Comment not found." });
+                }
+
+            } catch (err) {
+                console.error("Disable comment error:", err.message);
+                res.status(500).json({ message: "Unable to disable comment." });
+            }
+        }
+        break;
+      case "user":
+        let num_reports_users = 0;
+        let desired_users = await Report.find({
+            target_type: "user",
+            target_id: target_id 
+          });
+
+        num_reports_users = desired_users.length;
+
+        if ((num_reports_users + 1) >= 2) {
+            try {
+                let disabled_data = {
+                    is_active: false
+                };
+
+                const disabledUser = await User.findByIdAndUpdate(
+                    target_id,
+                    disabled_data,
+                    {
+                        new: true,
+                    },
+                );
+
+                if (!disabledUser) {
+                    return res.status(404).json({ message: "User not found." });
+                }
+
+            } catch (err) {
+                console.error("Disable user error:", err.message);
+                res.status(500).json({ message: "Unable to disable user." });
+            }
+        }
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid target type." });
+    }
+
     await Report.create({
       reporter_id: req.user._id,
       target_type,
