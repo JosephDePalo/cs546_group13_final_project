@@ -2,51 +2,28 @@
 <form id="commentForm" class="comment-form">
 
   {{!-- event_id --}}
-  <input
-    type="hidden"
-    id="event_id"
-    value="{{event._id}}"
-  />
+  <input type="hidden" id="event_id" value="{{event._id}}" />
 
 
-  <input
-    type="hidden"
-    id="parent_comment_id"
-    value=""
-  />
+  <input type="hidden" id="parent_comment_id" value="" />
 
   <div class="comment-input-group">
     <label for="content" class="sr-only">Comment</label>
 
-    <textarea
-      id="content"
-      rows="4"
-      maxlength="1000"
-      placeholder="Write a comment..."
-      required
-    ></textarea>
+    <textarea id="content" rows="4" maxlength="1000" placeholder="Write a comment..." required></textarea>
   </div>
 
   {{!-- error --}}
-  <div
-    id="commentError"
-    class="comment-error"
-    role="alert"
-    style="display:none;"
-  ></div>
+  <div id="commentError" class="comment-error" role="alert" style="display:none;"></div>
 
-  <button
-    id="commentSubmit"
-    type="submit"
-    class="btn btn-primary"
-  >
+  <button id="commentSubmit" type="submit" class="btn btn-primary">
     Post Comment
   </button>
 
 </form>
 {{else}}
-  {{!-- Not log in --}}
-  <p class="login-hint">
-    Please <a href="/home">log in</a> to post a comment.
-  </p>
+{{!-- Not log in --}}
+<p class="login-hint">
+  Please <a href="/login">log in</a> to post a comment.
+</p>
 {{/if}}

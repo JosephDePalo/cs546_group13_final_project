@@ -74,28 +74,27 @@ export const getEvent = async (req, res) => {
       20, // limit
     );
 
-    const commentsWithReplies = await await Promise.all(
-      comments.map(async (comment) => {
-        const c = comment.toObject ? comment.toObject() : comment;
-        const replies = await Comment.getCommentReplies(comment._id, 1, 10);
+    const commentsWithReplies = await comments.map(async (comment) => {
+      const c = comment.toObject ? comment.toObject() : comment;
+      const replies = await Comment.getCommentReplies(comment._id, 1, 10);
 
-        const replies2 = replies.map((r) => {
-          const rr = r.toObject ? r.toObject() : r;
-          return {
-            ...rr,
-            id: rr._id.toString(),
-            user_id_str: rr.user_id._id.toString(),
-          };
-        });
-
+      const replies2 = replies.map((r) => {
+        const rr = r.toObject ? r.toObject() : r;
         return {
-          ...c,
-          id: c._id.toString(),
-          user_id_str: c.user_id._id.toString(),
-          replies: replies2,
+          ...rr,
+          id: rr._id.toString(),
+          user_id_str: rr.user_id._id.toString(),
         };
-      }),
-    );
+      });
+
+      return {
+        ...c,
+        id: c._id.toString(),
+        user_id_str: c.user_id._id.toString(),
+        replies: replies2,
+      };
+    });
+
     const sUser = req.user
       ? {
           ...req.user.toObject(),
@@ -103,6 +102,7 @@ export const getEvent = async (req, res) => {
         }
       : null;
 
+    console.log(commentsWithReplies);
     res.json({
       page_title: `${event.title} | Volunteer Forum`,
       logged_in: Boolean(req.user),
