@@ -1,14 +1,11 @@
 import express from "express";
 import {
-  newReport,
-  getAllReports,
   getReport,
   updateReport,
   deleteReport,
-  resolveReport,
 } from "../controllers/report.controller.js";
 
-import { protect, admin } from "../middlewares/auth.middleware.js";
+import { isLoggedIn, isAdmin } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -16,15 +13,13 @@ const router = express.Router();
 
 // /api/v1/reports
 
-router.route("/").post(protect, newReport);
-
 // Get report by reportId | update report | delete report (admin priviledges only)
 
 router
   .route("/:id")
-  .get(protect, admin, getReport)
-  .put(protect, admin, updateReport)
-  .delete(protect, admin, deleteReport);
+  .get(isLoggedIn, isAdmin, getReport)
+  .put(isLoggedIn, isAdmin, updateReport)
+  .delete(isLoggedIn, isAdmin, deleteReport);
 
 // Get all reports (admin priviledges only)
 
