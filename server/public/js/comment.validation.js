@@ -123,4 +123,49 @@
       submitBtn && (submitBtn.disabled = false);
     }
   });
+
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest(".delete-btn");
+    if (!btn) return;
+
+    const commentId = btn.dataset.commentId;
+    if (!commentId) return;
+
+    const confirmed = confirm("Are you sure you want to delete this comment?");
+    if (!confirmed) return;
+
+    try {
+      const headers = {};
+
+      const token =
+        localStorage.getItem("authToken") ||
+        sessionStorage.getItem("authToken");
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const resp = await fetch(`/api/v1/comments/${commentId}`, {
+        method: "DELETE",
+        headers,
+      });
+
+      if (resp.status === 401) {
+        alert("Please log in to delete your comment.");
+        return;
+      }
+
+      const data = await resp.json().catch(() => ({}));
+
+      if (!resp.ok) {
+        alert(data.message || "Failed to delete comment.");
+        return;
+      }
+
+      location.reload();
+    } catch (err) {
+      console.error(err);
+      alert("Network error. Please try again.");
+    }
+  });
 })();

@@ -50,7 +50,7 @@ app.use("/api", cors());
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/reports", reportRoutes);
-app.use("/api", commentRoutes); //Add the comment routes to app.js.
+app.use("/api/v1", commentRoutes); // don't change this
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
