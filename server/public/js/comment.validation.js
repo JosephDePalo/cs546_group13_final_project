@@ -94,7 +94,7 @@
         headers.Authorization = `Bearer ${token}`;
       }
 
-      const resp = await fetch('/comments', {
+      const resp = await fetch('/api/comments', {
         method: 'POST',
         headers,
         body: JSON.stringify(result.data)
@@ -119,6 +119,7 @@
       contentInput.value = '';
       parentIdInput && (parentIdInput.value = '');
       clearError();
+      location.reload();
 
     } catch (err) {
       console.error(err);

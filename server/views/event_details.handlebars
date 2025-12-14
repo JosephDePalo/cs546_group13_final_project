@@ -105,7 +105,7 @@
 <script>
   /**
    * Reply button handler
-   * Fills parent_comment_id in the single comment form
+   * Fit for AJAX
    */
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.reply-btn');
@@ -119,5 +119,11 @@
       parentInput.value = parentId;
       contentInput.focus();
     }
+
+    contentInput.focus();
+    contentInput.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
   });
 </script>
