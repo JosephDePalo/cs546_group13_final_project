@@ -53,7 +53,7 @@ export const newReport = async (req, res) => {
     });
   } catch (err) {
     if (err.code === 11000) {
-      return res.status(409).json({
+      return res.status(500).json({
         message: "You have already reported this item.",
       });
     }

@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import Event from "../models/event.model.js";
 import { formatDateTimeLocal } from "../utils/helpers.js";
+import EventRegistration from "../models/eventreg.model.js";
 
 export const renderHome = (req, res) => {
   res.render("home", {
@@ -21,10 +22,25 @@ export const renderEvent = async (req, res) => {
     const formatted_start_time = formatDateTimeLocal(event.start_time);
     const formatted_end_time = formatDateTimeLocal(event.end_time);
 
+    let isRegistered = false;
+
+    if (req.user) {
+      const existingReg = await EventRegistration.findOne({
+        user_id: req.user._id,
+        event_id: event._id,
+        cancelled: false,
+      });
+
+      if (existingReg) {
+        isRegistered = true;
+      }
+    }
+
     res.render("event_details", {
       page_title: `${event.title} | Volunteer Forum`,
       logged_in: Boolean(req.user),
       user_id: req.user ? req.user._id : null,
+      isRegistered,
       ...event,
       formatted_start_time,
       formatted_end_time,
