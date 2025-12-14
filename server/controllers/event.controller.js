@@ -58,9 +58,9 @@ export const newEvent = async (req, res) => {
 
 export const getEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id).lean();
-    // New const by Julian
     const eventId = req.params.id;
+
+    const event = await Event.findById(eventId).lean();
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
     }
@@ -68,22 +68,19 @@ export const getEvent = async (req, res) => {
     const formatted_start_time = formatDateTimeLocal(event.start_time);
     const formatted_end_time = formatDateTimeLocal(event.end_time);
 
-    // Comment
     const comments = await Comment.getEventComments(
       eventId,
       1, // page
       20, // limit
     );
 
-    const commentsWithReplies = await Promise.all(
-      comments.map(async (comment) => {
-        const replies = await Comment.getCommentReplies(comment._id, 1, 10);
-        return {
-          ...comment.toObject(),
-          replies,
-        };
-      }),
-    );
+    const commentsWithReplies = await comments.map(async (comment) => {
+      const replies = await Comment.getCommentReplies(comment._id, 1, 10);
+      return {
+        ...comment.toObject(),
+        replies,
+      };
+    });
 
     res.json({
       page_title: `${event.title} | Volunteer Forum`,

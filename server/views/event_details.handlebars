@@ -88,7 +88,7 @@
   <h2>Comments</h2>
 
   {{!-- Comment Form --}}
-  {{> commentForm event=this user=user}}
+  {{> comment_form event=this user=user}}
 
   <hr>
 
@@ -96,7 +96,7 @@
   <div class="comment-list">
     {{#if comments.length}}
     {{#each comments}}
-    {{> commentItem this user=../user}}
+    {{> comment_item this user=../user}}
     {{/each}}
     {{else}}
     <p>No comments yet.</p>
@@ -118,7 +118,7 @@
 
 <script src="/js/eventreg.clientside.js"></script>
 {{!-- ===================== SCRIPTS ===================== --}}
-<script src="/public/js/comment.validation.js"></script>
+<script src="/js/comment.validation.js"></script>
 
 <script>
   /**
