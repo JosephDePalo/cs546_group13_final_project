@@ -111,6 +111,9 @@
   <a href="/event/manage/{{_id}}" class="btn btn-primary">
     Edit Event
   </a>
+  <form action="/api/v1/events/{{_id}}?_method=DELETE" method="POST" id="delete-form">
+    <button type="submit" class="btn btn-primary">Delete Event</button>
+  </form>
   {{/if}}
 
   <a href="/events" class="btn btn-primary">
@@ -146,4 +149,18 @@
       block: 'center'
     });
   });
+
+  document.getElementById("delete-form").addEventListener("click", (e) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this event?",
+    );
+
+    if (!confirmed) {
+      e.preventDefault(); // stop form submit / link
+      return;
+    }
+
+    // continue with action
+  });
+
 </script>

@@ -290,7 +290,7 @@ export const deleteEvent = async (req, res) => {
 
     await event.deleteOne();
 
-    res.json(event);
+    res.redirect("/events");
   } catch (err) {
     console.error("Delete event error:", err.message);
     return res.status(500).render("error", {
