@@ -109,7 +109,7 @@ const userSchema = new mongoose.Schema(
     },
     age: {
       type: Number,
-      min: [0, "Invalid age: cannot be negative"],
+      min: [13, "Invalid age: cannot be negative"],
       max: [120, "Invalid age: max 120"],
       description: "User’s age.",
     },
