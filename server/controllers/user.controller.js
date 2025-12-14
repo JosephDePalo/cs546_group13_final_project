@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.js";
 import User from "../models/user.model.js";
+import Friendship from "../models/friendship.model.js";
 
 // @desc     Auth user, set JWT cookie, redirect to protected page
 // @route    POST /api/v1/users/login
@@ -168,19 +169,72 @@ export const getUsers = async (req, res) => {
 // @access   Private/Admin
 export const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id)
+    const profileUser = await User.findById(req.params.id)
       .select("-password_hash -otp")
       .lean();
 
-    if (!user) {
+    if (!profileUser) {
       return res.status(404).json({ message: "User not found." });
     }
 
+    const currentUser = req.user || null;
+    const is_self =
+      currentUser && currentUser._id.toString() === profileUser._id.toString();
+    let friendship_status = "none";
+    let is_requester = false;
+    let pending_requests = [];
+    let friends = [];
+
+    if (currentUser) {
+      const friendship = await Friendship.findOne({
+        $or: [
+          { user_id: currentUser._id, friend_id: profileUser._id },
+          { user_id: profileUser._id, friend_id: currentUser._id },
+        ],
+      }).lean();
+      if (friendship) {
+        friendship_status = friendship.status;
+        is_requester =
+          friendship.user_id.toString() === currentUser._id.toString();
+      }
+
+      if (is_self) {
+        pending_requests = await Friendship.find({
+          friend_id: currentUser._id,
+          status: "pending",
+        })
+          .populate("friend_id", "username")
+          .lean();
+
+        friends = await Friendship.find({
+          status: "accepted",
+          $or: [{ user_id: currentUser._id }, { friend_id: currentUser._id }],
+        })
+          .populate("user_id friend_id", "username")
+          .lean();
+
+        friends = friends.map((f) => {
+          const is_me = f.user_id._id.toString() === currentUser._id.toString();
+          const friendUser = is_me ? f.friend_id : f.user_id;
+          return {
+            friendship_id: f._id.toString(),
+            _id: friendUser._id.toString(),
+            username: friendUser.username,
+          };
+        });
+      }
+    }
+
     res.render("user_profile", {
-      page_title: `${user.username} | Volunteer Forum`,
-      logged_in: Boolean(req.user),
-      user_id: req.user ? req.user._id : null,
-      ...user,
+      page_title: `${profileUser.username} | Volunteer Forum`,
+      logged_in: Boolean(currentUser),
+      user: currentUser,
+      profileUser, //The user being viewed
+      is_self,
+      friendship_status,
+      is_requester,
+      pending_requests,
+      friends,
     });
   } catch (err) {
     console.error("Get user error:", err.message);

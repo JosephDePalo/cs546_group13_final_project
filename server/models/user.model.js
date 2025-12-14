@@ -71,7 +71,6 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      default: null,
       unique: true,
       sparse: true,
       match: [/^[0-9]{10}$/, "Invalid phone number: must be 10 digits"],

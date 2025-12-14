@@ -3,6 +3,7 @@ import cors from "cors";
 import userRoutes from "./routes/user.routes.js";
 import eventRoutes from "./routes/event.routes.js";
 import pageRoutes from "./routes/pages.routes.js";
+import reportRoutes from "./routes/report.routes.js";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import exphbs from "express-handlebars";
@@ -10,7 +11,7 @@ import cookieParser from "cookie-parser";
 import MethodOverride from "method-override";
 import User from "./models/user.model.js";
 import jwt from "jsonwebtoken";
-import commentRoutes from "./routes/comments.routes.js";
+import friendshipRoutes from "./routes/friendship.routes.js";
 
 const swaggerDocument = YAML.load("./openapi.yaml");
 
@@ -64,7 +65,8 @@ app.use("/", pageRoutes);
 app.use("/api", cors());
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/events", eventRoutes);
-app.use("/api", commentRoutes);  //Add the comment routes to app.js.
+app.use("/api/v1/reports", reportRoutes);
+app.use("/api/v1/friendships", friendshipRoutes);
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
