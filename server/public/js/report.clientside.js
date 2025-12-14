@@ -1,3 +1,5 @@
+import xss from "xss"
+
 (function () {
   const form = document.getElementById("reports-form");
   const errors = document.getElementById("errors");
@@ -20,20 +22,28 @@
       errorCount++;
     };
 
-    const reason = form.reason.value.trim();
-    const description = form.description.value.trim();
-    const severity = form.severity.value;
-    const targetType = form.target_type.value;
-    const targetId = form.target_id.value;
+    const reason_value = form.reason.value.trim();
+    const description_value = form.description.value.trim();
+    const severity_value = form.severity.value;
+    const targetType_value = form.target_type.value;
+    const targetId_value = form.target_id.value;
 
     // Client-side validation
-    if (!reason) putError("Reason is required.");
-    if (!description) putError("Description is required.");
-    if (!["High", "Medium", "Low"].includes(severity))
+    if (!reason_value) putError("Reason is required.");
+    if (!description_value) putError("Description is required.");
+    if (!["High", "Medium", "Low"].includes(severity_value))
       putError("Invalid severity selected.");
-    if (!targetType || !targetId) putError("Invalid report target.");
+    if (!targetType_value || !targetId_value) putError("Invalid report target.");
 
     if (errorCount > 0) return;
+
+    // XSS validation
+
+    let reason = xss(reason_value);
+    let description = xss(description_value);
+    let severity = xss(severity_value);
+    let targetType = xss(targetType_value);
+    let targetId = xss(targetId_value);
 
     try {
       const payload = {
