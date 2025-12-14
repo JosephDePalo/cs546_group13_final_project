@@ -13,7 +13,7 @@ const reportSchema = new mongoose.Schema(
       required: [true, "Field: target_type is required and cannot be null"],
       type: String,
       trim: true,
-      enum: ["Event", "Comment", "User"],
+      enum: ["event", "comment", "user"],
       description: "The type of thing being reported",
     },
     target_id: {
@@ -30,11 +30,12 @@ const reportSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      default: null,
+      required: [true, "Field: description is required and cannot be null"],
       trim: true,
       maxlength: [500, "Invalid description length: max 500 chars"],
       description: "Detailed explanation provided by the reporter",
     },
+
     severity: {
       required: [true, "Field: severity is required and cannot be null"],
       type: String,
@@ -46,14 +47,14 @@ const reportSchema = new mongoose.Schema(
     resolution_status: {
       type: String,
       default: "pending",
-      enum: ["Pending", "Reviewed", "Dismissed"],
-      description: "Pending, reviewed, dismissed",
+      enum: ["pending", "reviewed", "dismissed"],
+      description: "pending, reviewed, dismissed",
     },
 
     responding_admin_id: {
       type: ObjectId,
       default: null,
-      ref: "Users",
+      ref: "User",
       description: "id of the admin who handled the report",
     },
 
@@ -68,7 +69,7 @@ const reportSchema = new mongoose.Schema(
     resolution_decision: {
       type: String,
       default: null,
-      enum: ["Warned", "Resolved", "Target_Redacted"],
+      enum: ["warned", "resolved", "target_redacted"],
       description: "The resultant decision for the report",
     },
 

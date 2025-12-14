@@ -1,26 +1,49 @@
 {{! Create Report | Update Report}}
 <h1> {{title}} </h1>
+<div id="errors" class="error" style="display:none;"></div>
 
-<form id="reports-form" name="reports-form "action="/api/v1/reports/{{_id}}?target={{type}}&target_id={{target_id}}" method="POST" class="form">
-    <label>
-        Report Reason
-        <input type="text" name="reason" placeholder="Enter Reason" value="{{reason}}" class="full-width-input">
-    </label>
-    <label>
-        Report Description
-        <input type="text" name="description" placeholder="Enter Description" value="{{description}}" class="full-width-input">
-    </label>
-    <label>
-        {{! Drop Down with fields High | Medium | Low }}
-        Severity
-        <select name="severity" class="full-width-input">
-            <option value="High"> High </option>
-            <option value="Medium"> Medium </option>
-            <option value="Low"> Low </option>
-        </select>
-    </label>
+<form
+  id="reports-form"
+  name="reports-form "
+  action="/api/v1/reports"
+  method="POST"
+  class="form"
+>
 
-    <button type="submit" id="submit-button">Submit Report</button>
-    <button type="reset">Clear Form</button>
+  <input type="hidden" name="target_type" value="{{target_type}}" />
+  <input type="hidden" name="target_id" value="{{target_id}}" />
+
+  <label>
+    Report Reason
+    <input
+      type="text"
+      name="reason"
+      placeholder="Enter Reason"
+      value="{{reason}}"
+      class="full-width-input"
+    />
+  </label>
+  <label>
+    Report Description
+    <input
+      type="text"
+      name="description"
+      placeholder="Enter Description"
+      value="{{description}}"
+      class="full-width-input"
+    />
+  </label>
+  <label>
+    {{! Drop Down with fields High | Medium | Low }}
+    Severity
+    <select name="severity" class="full-width-input">
+      <option value="High"> High </option>
+      <option value="Medium"> Medium </option>
+      <option value="Low"> Low </option>
+    </select>
+  </label>
+
+  <button type="submit" id="submit-button">Submit Report</button>
+  <button type="reset">Clear Form</button>
 </form>
-
+<script src="/js/report.clientside.js"></script>
