@@ -1,4 +1,5 @@
 /* global $, jQuery */
+import xss from "xss"
 
 (function ($) {
   let edit_form = document.getElementById("overview-edit-form");
@@ -124,7 +125,29 @@
       }
     }
 
+    // XSS validation
+
+    let validated_title = xss(title.value.trim());
+    let validated_description = xss(description.value.trim());
+    let validated_start_time = xss(start_time.value);
+    let validated_end_time = xss(end_time.value);
+    let validated_max_cap = xss(max_cap.value);
+    let validated_address = xss(address.value.trim());
+    let validated_city = xss(city.value.trim());
+    let validated_state = xss(state.value.trim());
+    let validated_url = xss(location_url.value.trim());
+
     if (errors_count === 0) {
+      title.value = validated_title;
+      description.value = validated_description;
+      start_time.value = validated_start_time;
+      end_time.value = validated_end_time;
+      max_cap.value = validated_max_cap;
+      address.value = validated_address;
+      city.value = validated_city;
+      state.value = validated_state;
+      location_url.value = validated_url;
+      
       edit_form.submit();
     }
   });
