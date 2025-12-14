@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import Event from "../models/event.model.js";
+import Comment from "../models/comments.model.js";
 import { formatDateTimeLocal } from "../utils/helpers.js";
 import EventRegistration from "../models/eventreg.model.js";
 
@@ -13,7 +14,8 @@ export const renderHome = (req, res) => {
 
 export const renderEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id).lean();
+    const eventId = req.params.id;
+    const event = await Event.findById(eventId).lean();
 
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
@@ -36,6 +38,42 @@ export const renderEvent = async (req, res) => {
       }
     }
 
+    const comments = await Comment.getEventComments(
+      eventId,
+      1, // page
+      20, // limit
+    );
+
+    const commentsWithReplies = await Promise.all(
+      comments.map(async (comment) => {
+        const c = comment.toObject ? comment.toObject() : comment;
+        const replies = await Comment.getCommentReplies(comment._id, 1, 10);
+
+        const replies2 = replies.map((r) => {
+          const rr = r.toObject ? r.toObject() : r;
+          return {
+            ...rr,
+            id: rr._id.toString(),
+            user_id_str: rr.user_id._id.toString(),
+          };
+        });
+
+        return {
+          ...c,
+          id: c._id.toString(),
+          user_id_str: c.user_id._id.toString(),
+          replies: replies2,
+        };
+      }),
+    );
+
+    const sUser = req.user
+      ? {
+          ...req.user.toObject(),
+          id: req.user._id.toString(),
+        }
+      : null;
+
     res.render("event_details", {
       page_title: `${event.title} | Volunteer Forum`,
       logged_in: Boolean(req.user),
@@ -44,6 +82,8 @@ export const renderEvent = async (req, res) => {
       ...event,
       formatted_start_time,
       formatted_end_time,
+      user: sUser,
+      comments: commentsWithReplies, //added by Julian
     });
   } catch (err) {
     console.error("Get event error:", err.message);

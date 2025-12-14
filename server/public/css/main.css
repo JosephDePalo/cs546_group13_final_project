@@ -34,3 +34,15 @@ h1 {
   background-color: #007bff;
   color: #fff;
 }
+
+.comment {
+  margin-bottom: 12px;
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+.comment-reply {
+  margin-left: 32px;
+  background-color: #f9f9f9;
+  border-left: 3px solid #007bff;
+}

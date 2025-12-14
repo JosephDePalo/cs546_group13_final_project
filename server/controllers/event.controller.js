@@ -1,6 +1,6 @@
 import Event from "../models/event.model.js";
 import { formatDateTimeLocal } from "../utils/helpers.js";
-
+import Comment from "../models/comments.model.js";
 // @desc     Create new event
 // @route    POST /api/events
 // @access   Private
@@ -58,8 +58,9 @@ export const newEvent = async (req, res) => {
 
 export const getEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id).lean();
+    const eventId = req.params.id;
 
+    const event = await Event.findById(eventId).lean();
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
     }
@@ -67,10 +68,50 @@ export const getEvent = async (req, res) => {
     const formatted_start_time = formatDateTimeLocal(event.start_time);
     const formatted_end_time = formatDateTimeLocal(event.end_time);
 
+    const comments = await Comment.getEventComments(
+      eventId,
+      1, // page
+      20, // limit
+    );
+
+    const commentsWithReplies = await comments.map(async (comment) => {
+      const c = comment.toObject ? comment.toObject() : comment;
+      const replies = await Comment.getCommentReplies(comment._id, 1, 10);
+
+      const replies2 = replies.map((r) => {
+        const rr = r.toObject ? r.toObject() : r;
+        return {
+          ...rr,
+          id: rr._id.toString(),
+          user_id_str: rr.user_id._id.toString(),
+        };
+      });
+
+      return {
+        ...c,
+        id: c._id.toString(),
+        user_id_str: c.user_id._id.toString(),
+        replies: replies2,
+      };
+    });
+
+    const sUser = req.user
+      ? {
+          ...req.user.toObject(),
+          id: req.user._id.toString(),
+        }
+      : null;
+
+    console.log(commentsWithReplies);
     res.json({
+      page_title: `${event.title} | Volunteer Forum`,
+      logged_in: Boolean(req.user),
+      user: sUser, // added by Julian
+      user_id: req.user ? req.user._id : null,
       ...event,
       formatted_start_time,
       formatted_end_time,
+      comments: commentsWithReplies, //added by Julian
     });
   } catch (err) {
     console.error("Get event error:", err.message);
