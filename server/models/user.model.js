@@ -118,6 +118,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Field: password_hash is required and cannot be null"],
       description: "Hashed password used for authentication.",
+      validate: {
+        validator: function (value) {
+          if (!this.isModified("password_hash")) return true;
+
+          if (typeof value !== "string") return false;
+          if (value.length < 8) return false;
+          if (!/[A-Z]/.test(value)) return false;
+          if (!/[0-9]/.test(value)) return false;
+          if (!/[!@#$%^&*]/.test(value)) return false;
+
+          return true;
+        },
+        message:
+          "Invalid password: must have be at least 8 characters long and have a capital letter, number, and special character",
+      },
     },
     otp: {
       type: String,
