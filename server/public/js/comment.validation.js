@@ -1,3 +1,5 @@
+import xss from "xss"
+
 (() => {
   const form = document.getElementById("commentForm");
   if (!form) return;
@@ -27,35 +29,41 @@
   const validate = () => {
     clearError();
 
-    const event_id = String(eventIdInput?.value || "").trim();
-    const parent_comment_id = String(parentIdInput?.value || "").trim();
-    const content = String(contentInput?.value || "").trim();
+    const event_id_value = String(eventIdInput?.value || "").trim();
+    const parent_comment_id_value = String(parentIdInput?.value || "").trim();
+    const content_value = String(contentInput?.value || "").trim();
 
-    if (!event_id) {
+    if (!event_id_value) {
       return { ok: false, message: "EventId is required." };
     }
 
-    if (!isValidObjectId(event_id)) {
+    if (!isValidObjectId(event_id_value)) {
       return { ok: false, message: "Invalid EventId format." };
     }
 
-    if (!content) {
+    if (!content_value) {
       return { ok: false, message: "Comment content is required." };
     }
 
-    if (content.length > 1000) {
+    if (content_value.length > 1000) {
       return {
         ok: false,
         message: `Comment too long (max 1000, now ${content.length}).`,
       };
     }
 
-    if (parent_comment_id && !isValidObjectId(parent_comment_id)) {
+    if (parent_comment_id_value && !isValidObjectId(parent_comment_id_value)) {
       return {
         ok: false,
         message: "Invalid parent comment id.",
       };
     }
+    
+    // XSS validating 
+    
+    let event_id = xss(event_id_value);
+    let parent_comment_id = xss(parent_comment_id_value);
+    let content = xss(content_value);
 
     return {
       ok: true,
