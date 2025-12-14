@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import MethodOverride from "method-override";
 import User from "./models/user.model.js";
 import jwt from "jsonwebtoken";
+import commentRoutes from "./routes/comments.routes.js";
 
 const swaggerDocument = YAML.load("./openapi.yaml");
 
@@ -17,6 +18,7 @@ const app = express();
 
 const hbs = exphbs.create({
   defaultLayout: "main",
+  partialsDir: ["views/partials"],
   helpers: {
     eq: (x, y) => x === y,
   },
@@ -62,6 +64,7 @@ app.use("/", pageRoutes);
 app.use("/api", cors());
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/events", eventRoutes);
+app.use("/api", commentRoutes);
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));

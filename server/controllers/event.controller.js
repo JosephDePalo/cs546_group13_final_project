@@ -1,6 +1,6 @@
 import Event from "../models/event.model.js";
 import { formatDateTimeLocal } from "../utils/helpers.js";
-
+import Comment from "../models/comments.model.js";
 // @desc     Create new event
 // @route    POST /api/events
 // @access   Private
@@ -59,7 +59,8 @@ export const newEvent = async (req, res) => {
 export const getEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id).lean();
-
+    // New const by Julian
+    const eventId = req.params.id;
     if (!event) {
       return res.status(404).json({ message: "Event not found." });
     }
@@ -67,13 +68,32 @@ export const getEvent = async (req, res) => {
     const formatted_start_time = formatDateTimeLocal(event.start_time);
     const formatted_end_time = formatDateTimeLocal(event.end_time);
 
+    // Comment 
+    const comments = await Comment.getEventComments(
+      eventId,
+      1,    // page
+      20    // limit
+    );
+
+    const commentsWithReplies = await Promise.all(
+      comments.map(async (comment) =>{
+        const replies = await Comment.getCommentReplies(comment._id, 1, 10);
+        return {
+          ...comment.toObject(),
+          replies
+        };
+      })
+    );
+
     res.render("event_details", {
       page_title: `${event.title} | Volunteer Forum`,
       logged_in: Boolean(req.user),
+      user: req.user || null,   // added by Julian
       user_id: req.user ? req.user._id : null,
       ...event,
       formatted_start_time,
       formatted_end_time,
+      comments: commentsWithReplies //added by Julian
     });
   } catch (err) {
     console.error("Get event error:", err.message);

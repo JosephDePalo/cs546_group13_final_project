@@ -1,0 +1,35 @@
+<div class="comment" data-comment-id="{{_id}}">
+
+  <div class="comment-header">
+    <strong>{{user_id.username}}</strong>
+  </div>
+
+  <div class="comment-body">
+    <p>{{content}}</p>
+  </div>
+
+  <div class="comment-footer">
+    <small>{{created_at}}</small>
+
+    {{!-- Only logged-in users can reply. --}}
+    {{#if ../user}}
+      <button
+        type="button"
+        class="reply-btn"
+        data-parent-id="{{_id}}"
+      >
+        Reply
+      </button>
+    {{/if}}
+  </div>
+
+  {{!-- Sub-comment --}}
+  {{#if replies}}
+    <div class="comment-replies">
+      {{#each replies}}
+        {{> commentItem this user=../user}}
+      {{/each}}
+    </div>
+  {{/if}}
+
+</div>
