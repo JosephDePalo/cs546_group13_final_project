@@ -214,6 +214,7 @@ const eventSchema = new mongoose.Schema(
 eventSchema.statics.getEvents = function (page = 1, limit = 20) {
   return this.find({
     disabled: false,
+    status: { $in: ["Upcoming", "Ongoing"] },
   })
     .populate("organizer_id", "username profile_picture_url")
     .sort({ created_at: -1 })
