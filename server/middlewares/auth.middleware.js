@@ -97,7 +97,7 @@ export const isAdminOrEventOrganizer = async (req, res, next) => {
   } else {
     try {
       const event = await Event.findById(req.params.id).select("organizer_id");
-      if (event.organizer_id === req.user._id.toString()) {
+      if (event.organizer_id.toString() === req.user._id.toString()) {
         next();
       } else {
         return res.status(403).render("error", {
