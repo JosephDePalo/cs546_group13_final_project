@@ -8,6 +8,8 @@ import {
   renderEventManagement,
   renderNewReport,
   renderEditProfile,
+  renderEvent,
+  renderEventsList,
 } from "../controllers/pages.controller.js";
 import { exampleProtectedPage } from "../controllers/pages.controller.js";
 import { protect, admin } from "../middlewares/auth.middleware.js";
@@ -25,8 +27,12 @@ router.get("/login", renderLogin);
 
 router.get("/leaderboard", renderLeaderboard);
 
-router.get("/event/new_event", renderNewEvent);
+router.get("/events/", renderEventsList);
 
+router.get("/events/:id", renderEvent);
+
+router.get("/event/new_event", renderNewEvent);
+``;
 router.get("/event/manage/:id", renderEventManagement);
 
 router.get("/user/edit/:id", renderEditProfile);

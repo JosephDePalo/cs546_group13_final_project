@@ -10,6 +10,57 @@ export const renderHome = (req, res) => {
   });
 };
 
+export const renderEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id).lean();
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    const formatted_start_time = formatDateTimeLocal(event.start_time);
+    const formatted_end_time = formatDateTimeLocal(event.end_time);
+
+    res.render("event_details", {
+      page_title: `${event.title} | Volunteer Forum`,
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      ...event,
+      formatted_start_time,
+      formatted_end_time,
+    });
+  } catch (err) {
+    console.error("Get event error:", err.message);
+    res.status(500).json({ message: "Unable to fetch event." });
+  }
+};
+
+export const renderEventsList = async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const events = await Event.getEvents(page, limit).lean();
+    const eventCount = await Event.countDocuments();
+    const pageCount = Math.ceil(eventCount / limit);
+    res.render("event_feed", {
+      events,
+      page_title: "Event Feed | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      page_details: {
+        is_next_page: pageCount > page,
+        next_page: parseInt(page) + 1,
+        is_prev_page: page != 1,
+        prev_page: parseInt(page) - 1,
+        current_page: page,
+        page_limit: limit,
+      },
+    });
+  } catch (err) {
+    console.error("Get events error:", err.message);
+    res.status(500).json({ message: "Unable to fetch events." });
+  }
+};
+
 export const renderRegister = (req, res) => {
   res.render("register", {
     page_title: "Register | Volunteer Forum",
