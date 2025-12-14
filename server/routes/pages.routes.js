@@ -30,6 +30,13 @@ router.get("/event/manage/:id", renderEventManagement);
 
 router.get("/user/edit/:id", renderEditProfile);
 
+router.get("report/event/:id", (req, res) => 
+  renderNewReport(req, res, "event"));
+router.get("report/user/:id", (req, res) => 
+  renderNewReport(req, res, "user"));
+router.get("report/comment/:id", (req, res) => 
+  renderNewReport(req, res, "comment"));
+
 // EXAMPLE PROTECTED PAGE
 // router.get("/profile" , protect, renderProfile)
 
