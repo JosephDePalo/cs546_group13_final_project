@@ -107,9 +107,11 @@
 
 
 <div class="actions">
+  {{#if is_owner_or_admin}}
   <a href="/event/manage/{{_id}}" class="btn btn-primary">
     Edit Event
   </a>
+  {{/if}}
 
   <a href="/events" class="btn btn-primary">
     Back to Events

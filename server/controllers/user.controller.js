@@ -179,6 +179,8 @@ export const getUserById = async (req, res) => {
     res.render("user_profile", {
       page_title: `${user.username} | Volunteer Forum`,
       logged_in: Boolean(req.user),
+      is_owner_or_admin:
+        req.user.is_admin || req.user?._id.toString() === req.params.id,
       user_id: req.user ? req.user._id : null,
       ...user,
     });
