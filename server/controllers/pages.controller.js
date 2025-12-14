@@ -4,11 +4,23 @@ import Comment from "../models/comments.model.js";
 import { formatDateTimeLocal } from "../utils/helpers.js";
 import EventRegistration from "../models/eventreg.model.js";
 
-export const renderHome = (req, res) => {
+export const renderHome = async (req, res) => {
+  const top_users = await User.getTopUsers(3);
+  const recent_events = await Event.find({
+    disabled: false,
+    status: { $in: ["Upcoming", "Ongoing"] },
+  })
+    .sort({ created_at: -1 })
+    .limit(3)
+    .lean();
+  console.log(top_users);
   res.render("home", {
     page_title: "Volunteer Forum",
     logged_in: Boolean(req.user),
     user_id: req.user ? req.user._id : null,
+    user: req.user?.toObject(),
+    top_users,
+    recent_events,
   });
 };
 
