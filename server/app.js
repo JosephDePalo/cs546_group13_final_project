@@ -64,7 +64,7 @@ app.use("/", pageRoutes);
 app.use("/api", cors());
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/events", eventRoutes);
-app.use("/api", commentRoutes);
+app.use("/api", commentRoutes);  //Add the comment routes to app.js.
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
