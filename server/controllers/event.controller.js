@@ -3,6 +3,8 @@ import EventRegistration from "../models/eventreg.model.js";
 import User from "../models/user.model.js";
 import { formatDateTimeLocal } from "../utils/helpers.js";
 import Comment from "../models/comments.model.js";
+import Friendship from "../models/friendship.model.js";
+import xss from "xss";
 
 // @desc     Create new event
 // @route    POST /api/events
@@ -37,17 +39,27 @@ export const newEvent = async (req, res) => {
       });
     }
 
+    // XSS
+
+    let valid_title = xss(title);
+    let valid_description = xss(description);
+    let valid_url = xss(location_url);
+    let valid_max_capacity = xss(max_capacity);
+    let valid_address = xss(address);
+    let valid_city = xss(city);
+    let valid_state = xss(state);
+
     const event = await Event.create({
       organizer_id: req.user._id,
-      title,
-      description,
-      location_url,
+      title: valid_title,
+      description: valid_description,
+      location_url: valid_url,
       start_time,
       end_time,
-      max_capacity,
-      address,
-      city,
-      state,
+      max_capacity: valid_max_capacity,
+      address: valid_address,
+      city: valid_city,
+      state: valid_state,
     });
 
     res.redirect(`/events/${event._id}`);
@@ -226,6 +238,14 @@ export const updateEventDetails = async (req, res) => {
       });
     }
 
+    updates.title = xss(updates.title);
+    updates.description = xss(updates.description);
+    updates.location_url = xss(updates.location_url);
+    updates.max_capacity = xss(updates.max_capacity);
+    updates.address = xss(updates.address);
+    updates.city = xss(updates.city);
+    updates.state = xss(updates.state);
+
     const updatedEvent = await Event.findByIdAndUpdate(req.params.id, updates, {
       new: true,
     });
@@ -379,5 +399,58 @@ export const rewardRegisteredUsers = async (req, res) => {
   } catch (err) {
     console.error("Reward registered users error:", err);
     res.status(500).json({ message: "Unable to reward users." });
+  }
+};
+
+export const getFriendEvents = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const friendships = await Friendship.find({
+      status: "accepted",
+      $or: [{ user_id: userId }, { friend_id: userId }],
+    });
+    const friendIds = friendships.map((f) =>
+      f.user_id.equals(userId) ? f.friend_id : f.user_id,
+    );
+    const registrations = await EventRegistration.find({
+      user_id: { $in: friendIds },
+      cancelled: false,
+    });
+    const eventIds = [
+      ...new Set(registrations.map((r) => r.event_id.toString())),
+    ];
+    const events = await Event.find({
+      _id: { $in: eventIds },
+      disabled: false,
+      status: { $in: ["Upcoming", "Ongoing"] },
+    })
+      .populate("organizer_id", "username profile_picture_url")
+      .sort({ start_time: 1 });
+
+    const { page = 1, limit = 20 } = req.query;
+    const eventCount = await Event.countDocuments();
+    const pageCount = Math.ceil(eventCount / limit);
+    const eventFeed = {
+      events,
+      page_details: {
+        is_next_page: pageCount > page,
+        next_page: parseInt(page) + 1,
+        is_prev_page: page != 1,
+        prev_page: parseInt(page) - 1,
+        current_page: page,
+        page_limit: limit,
+      },
+    };
+
+    res.json(eventFeed);
+  } catch (err) {
+    console.error("Get friend events error:", err.message);
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to fetch friend events.`,
+    });
   }
 };
