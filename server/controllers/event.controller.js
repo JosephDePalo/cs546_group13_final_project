@@ -203,6 +203,21 @@ export const updateEventDetails = async (req, res) => {
       });
     }
 
+    // Freezing status completed. Admins can unfreeze it(have the ability to change it from completed to "")
+    if (
+      event.status === "Completed" &&
+      !req.user.is_admin &&
+      req.body.status &&
+      req.body.status !== "Completed"
+    ) {
+      return res.status(403).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: "Completed events cannot have their status changed.",
+      });
+    }
+
     const updatedEvent = await Event.findByIdAndUpdate(req.params.id, updates, {
       new: true,
     });
@@ -216,7 +231,7 @@ export const updateEventDetails = async (req, res) => {
       });
     }
 
-    res.redirect(`/events/${event._id}`);
+    res.redirect(`/event/manage/${event._id}`);
   } catch (err) {
     console.error("Update event details error:", err.message);
     return res.status(500).render("error", {

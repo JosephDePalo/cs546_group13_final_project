@@ -12,6 +12,13 @@ export const newEventRegistration = async (req, res) => {
       return res.sendStatus(404);
     }
 
+    // only allows registration if event status is marked "Upcoming"
+    if (event.status !== "Upcoming") {
+      return res.status(403).json({
+        message: "Registrations are only allowed for upcoming events.",
+      });
+    }
+
     //check capacity
     if (event.registrations_count >= event.max_capacity) {
       // event full
