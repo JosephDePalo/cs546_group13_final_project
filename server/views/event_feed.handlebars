@@ -1,29 +1,31 @@
+{{#if on_friends_page}}
+<h1>Friends Event Feed</h1>
+<a href="/events/new_event" class="btn btn-primary">New Event</a>
+<a href="/events" class="btn btn-primary">See All Events</a>
+{{else}}
 <h1>Event Feed</h1>
-<a href="/event/new_event" class="btn btn-primary">New Event</a>
+<a href="/events/new_event" class="btn btn-primary">New Event</a>
+<a href="/events/friends" class="btn btn-primary">See Events with Friends</a>
+{{/if}}
 
 <main class="feed">
   {{#each events}}
-    <hr />
-    <article class="event-post">
-      <a href="/events/{{_id}}">
-        <h3>{{title}}</h3>
-      </a>
-      <a href="/api/v1/users/{{organizer_id._id}}">{{organizer_id.username}}</a>
-    </article>
+  <hr />
+  <article class="event-post">
+    <a href="/events/{{_id}}">
+      <h3>{{title}}</h3>
+    </a>
+    <a href="/api/v1/users/{{organizer_id._id}}">{{organizer_id.username}}</a>
+  </article>
   {{/each}}
   <hr />
 
   {{#if page_details.is_prev_page}}
-    <a
-      href="/events?page={{page_details.prev_page}}&limit={{page_details.page_limit}}"
-    >&lt;-</a>
+  <a href="/events?page={{page_details.prev_page}}&limit={{page_details.page_limit}}">&lt;-</a>
   {{/if}}
   <a
-    href="/events?page={{page_details.current_page}}&limit={{page_details.page_limit}}"
-  >{{page_details.current_page}}</a>
+    href="/events?page={{page_details.current_page}}&limit={{page_details.page_limit}}">{{page_details.current_page}}</a>
   {{#if page_details.is_next_page}}
-    <a
-      href="/events?page={{page_details.next_page}}&limit={{page_details.page_limit}}"
-    >-&gt;</a>
+  <a href="/events?page={{page_details.next_page}}&limit={{page_details.page_limit}}">-&gt;</a>
   {{/if}}
 </main>
