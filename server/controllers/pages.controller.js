@@ -31,7 +31,7 @@ export const renderEvent = async (req, res) => {
 
     if (!event) {
       return res.status(404).render("error", {
-        page_title: "Register | Volunteer Forum",
+        page_title: "Event Not Found | Volunteer Forum",
         logged_in: Boolean(req.user),
         user_id: req.user ? req.user._id : null,
         message: `Event not found.`,
@@ -39,7 +39,7 @@ export const renderEvent = async (req, res) => {
     }
     if (event.disabled && !req.user.is_admin) {
       return res.status(403).render("error", {
-        page_title: "Register | Volunteer Forum",
+        page_title: "Access Denied | Volunteer Forum",
         logged_in: Boolean(req.user),
         user_id: req.user ? req.user._id : null,
         message: `You are not authorized to view a disabled event.`,
@@ -117,7 +117,7 @@ export const renderEvent = async (req, res) => {
   } catch (err) {
     console.error("Get event error:", err.message);
     return res.status(500).render("error", {
-      page_title: "Register | Volunteer Forum",
+      page_title: "Event Error | Volunteer Forum",
       logged_in: Boolean(req.user),
       user_id: req.user ? req.user._id : null,
       message: `Unable to fetch event.`,
@@ -149,7 +149,7 @@ export const renderEventsList = async (req, res) => {
   } catch (err) {
     console.error("Get events error:", err.message);
     return res.status(500).render("error", {
-      page_title: "Register | Volunteer Forum",
+      page_title: "Event Feed Error | Volunteer Forum",
       logged_in: Boolean(req.user),
       user_id: req.user ? req.user._id : null,
       message: `Unable to fetch events.`,
@@ -167,7 +167,7 @@ export const renderRegister = (req, res) => {
 
 export const exampleProtectedPage = (req, res) => {
   res.render("exampleProtectedPage", {
-    page_title: "Protected Page",
+    page_title: "Protected Page | Volunteer Forum",
     logged_in: Boolean(req.user),
     user_id: req.user ? req.user._id : null,
     user: req.user.toObject(),
@@ -230,7 +230,7 @@ export const renderEventManagement = async (req, res) => {
   } catch (err) {
     console.error("renderEventManagement error: " + err.message);
     return res.status(404).render("error", {
-      page_title: "Register | Volunteer Forum",
+      page_title: "Event Not Found | Volunteer Forum",
       logged_in: Boolean(req.user),
       user_id: req.user ? req.user._id : null,
       message: `Event does not exist`,

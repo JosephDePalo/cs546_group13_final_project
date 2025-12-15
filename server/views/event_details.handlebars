@@ -91,6 +91,26 @@
 
 </section>
 
+// friends-attending-list
+{{#if logged_in}}
+  {{#if friends_attending.length}}
+    <section class="friends-attending">
+      <h2>Friends Attending</h2>
+
+      <ul class="friends-attending-list">
+        {{#each friends_attending}}
+          <li class="friend-item">
+            <a href="/api/v1/users/{{id}}">
+              {{username}}
+            </a>
+          </li>
+        {{/each}}
+      </ul>
+    </section>
+
+    <hr>
+  {{/if}}
+{{/if}}
 
 <hr>
 

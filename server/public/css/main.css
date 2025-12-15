@@ -213,3 +213,21 @@ nav a:hover {
   font-size: 14px;
   color: #222;
 }
+
+.friends-attending-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.friend-item {
+  margin-bottom: 4px;
+}
+
+.friend-item a {
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.friend-item a:hover {
+  text-decoration: underline;
+}
