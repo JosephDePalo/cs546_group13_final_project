@@ -3,19 +3,23 @@
   Report Event
 </a>
 <div class="actions">
-  {{#if isRegistered}}
-  <button id="register-btn" data-event-id="{{_id}}" class="btn btn-danger">
-    Unregister
-  </button>
+  {{#if (eq status "Upcoming")}}
+    {{#if isRegistered}}
+      <button id="register-btn"  data-event-id="{{_id}}" class="btn btn-danger">
+        Unregister
+      </button>
+    {{else}}
+      <button  id="register-btn"    data-event-id="{{_id}}"  class="btn btn-primary">
+        Register
+      </button>
+    {{/if}}
   {{else}}
-  <button id="register-btn" data-event-id="{{_id}}" class="btn btn-primary">
-    Register
-  </button>
+    <p class="text-muted"> Registration is closed for this event.</p>
   {{/if}}
 
   <div id="register-error"></div>
-
 </div>
+
 
 <section class="event-details">
 
@@ -150,17 +154,19 @@
     });
   });
 
-  document.getElementById("delete-form").addEventListener("click", (e) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this event?",
-    );
+    const deleteForm = document.getElementById("delete-form");
 
-    if (!confirmed) {
-      e.preventDefault(); // stop form submit / link
-      return;
+    if (deleteForm) {
+      deleteForm.addEventListener("submit", (e)=>{
+        const confirmed = window.confirm(
+          "Are you sure you want to delete this event?"
+        );
+
+        if (!confirmed) {
+          e.preventDefault();
+        }
+      });
     }
 
-    // continue with action
-  });
 
 </script>

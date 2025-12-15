@@ -8,7 +8,11 @@
 
 <div class="form-item">
   <label for="status">Event Status</label>
-  <select id="status" name="status">
+  <select
+    id="status"
+    name="status"
+    {{#if (eq status "Completed")}}disabled{{/if}}
+>
     <option value="Upcoming" {{#if (eq status "Upcoming")}}selected{{/if}}>
       Upcoming
     </option>
