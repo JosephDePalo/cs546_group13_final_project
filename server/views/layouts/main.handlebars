@@ -1,46 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>{{#if page_title}}{{page_title}}{{else}}Volunteer Forum{{/if}}</title>
-    <link rel="stylesheet" href="/css/main.css" />
-  </head>
+  <title>{{#if page_title}}{{page_title}}{{else}}Volunteer Forum{{/if}}</title>
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
 
-  <body>
-    <nav class="top-nav">
-      <ul class="nav-list">
-        <li><a href="/home">Home</a></li>
-        <li><a href="/leaderboard">Leaderboard</a></li>
+<body>
+  <nav class="top-nav">
+    <ul class="nav-list">
+      <li><a href="/home">Home</a></li>
+      <li><a href="/leaderboard">Leaderboard</a></li>
 
-        {{#if logged_in}}
-          <li><a href="/events">Feed</a></li>
-          <li><a href="/api/v1/users/{{user_id}}">Profile</a></li>
-          <li class="nav-log-btn"><a href="/api/v1/users/logout">Logout</a></li>
-        {{else}}
-          <li><a href="/register">Register</a></li>
-          <li class="nav-log-btn"><a href="/login">Login</a></li>
-        {{/if}}
-      </ul>
-    </nav>
+      {{#if logged_in}}
+      <li><a href="/events">Feed</a></li>
+      <li><a href="/api/v1/users/{{user._id}}">Profile</a></li>
+      <li class="nav-log-btn"><a href="/api/v1/users/logout">Logout</a></li>
+      {{else}}
+      <li><a href="/register">Register</a></li>
+      <li class="nav-log-btn"><a href="/login">Login</a></li>
+      {{/if}}
+    </ul>
+  </nav>
 
-    {{#if errors}}
-      <div id="server-errors" class="error-container">
-        <ul>
-          {{#each errors}}
-            <li>{{this}}</li>
-          {{/each}}
-        </ul>
-      </div>
-    {{/if}}
+  {{#if errors}}
+  <div id="server-errors" class="error-container">
+    <ul>
+      {{#each errors}}
+      <li>{{this}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  {{/if}}
 
-    <div id="errors" class="hidden">
-      <div class="error-msg"></div>
-    </div>
+  <div id="errors" class="hidden">
+    <div class="error-msg"></div>
+  </div>
 
-    {{{body}}}
-  </body>
+  {{{body}}}
+</body>
 
 </html>

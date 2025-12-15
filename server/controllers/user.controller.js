@@ -251,6 +251,7 @@ export const getUserById = async (req, res) => {
         page_title: "Register | Volunteer Forum",
         logged_in: Boolean(req.user),
         user_id: req.user ? req.user._id : null,
+        user: req.user?.toObject(),
         message: `User not found.`,
       });
     }
@@ -306,7 +307,7 @@ export const getUserById = async (req, res) => {
     res.render("user_profile", {
       page_title: `${profileUser.username} | Volunteer Forum`,
       logged_in: Boolean(currentUser),
-      user: currentUser,
+      user: currentUser?.toObject(),
       profileUser, //The user being viewed
       is_self,
       friendship_status,
