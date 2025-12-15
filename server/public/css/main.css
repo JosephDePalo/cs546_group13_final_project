@@ -67,3 +67,139 @@ h1 {
   background-color: #f9f9f9;
   border-left: 3px solid #007bff;
 }
+
+/* Nav Bar */
+
+nav {
+  background-color: #f0f0f0;
+  border-bottom: 1px solid rgb(228, 226, 226);
+}
+
+.nav-list {
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 15px;
+  margin: 0;
+}
+
+nav li {
+  margin: 0;
+}
+
+nav a {
+  display: inline-block;
+  padding: 8px 14px;
+
+  text-decoration: none;
+  color: #2d2a2a;
+
+  border: 1px solid #e6e4e4;
+  background-color: #f1eeee;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+.nav-log-btn {
+  margin-left: auto;
+}
+
+.event-feed-headers {
+  max-width: 600px;
+  margin-top: 80px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 24px;
+  background: #f7f7f7;
+  border-radius: 6px;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+}
+.event-management-headers {
+  max-width: 900px;
+  margin-top: 80px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 24px;
+  background: #f7f7f7;
+  border-radius: 6px;
+}
+.feed {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 24px;
+  background: #f7f7f7;
+  border-radius: 6px;
+}
+
+.tag-label-text a {
+  font-size: medium;
+  font-weight: bold;
+}
+
+.event-post {
+  background-color: #eeeef1;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #e6e4e4;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.event-details-header {
+  display: flex;
+  justify-content: space-between;
+
+  align-items: baseline;
+}
+
+.detail-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+
+  max-height: fit-content;
+  padding: 8px 0;
+  border-bottom: 1px solid #e6e4e4;
+}
+
+.detail-label {
+  font-weight: bold;
+  color: #444;
+  min-width: 100px;
+}
+
+.report-event {
+  font-weight: lighter;
+  background-color: rgb(249, 234, 234);
+  padding: 4px;
+}
+
+.btn-delete {
+  background-color: rgb(166, 166, 166);
+}
+
+.manage-btn {
+  background-color: rgb(5, 93, 5);
+}
+
+.form-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+
+  max-height: fit-content;
+  padding: 8px 0;
+  border-bottom: 1px solid #e6e4e4;
+}
+
+.form-item label {
+  font-weight: bold;
+  color: #444;
+  min-width: 100px;
+}

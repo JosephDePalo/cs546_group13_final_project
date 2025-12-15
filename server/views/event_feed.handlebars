@@ -1,17 +1,28 @@
-<h1>Event Feed</h1>
-<a href="/event/new_event" class="btn btn-primary">New Event</a>
-
+<div class="event-feed-headers">
+  <h1>Event Feed</h1>
+  <a href="/event/new_event" class="btn btn-primary">New Event</a>
+</div>
 <main class="feed">
   {{#each events}}
-    <hr />
     <article class="event-post">
-      <a href="/events/{{_id}}">
-        <h3>{{title}}</h3>
-      </a>
-      <a href="/api/v1/users/{{organizer_id._id}}">{{organizer_id.username}}</a>
+      <p class="tag-label-text">
+
+        Title:
+
+        <a href="/events/{{_id}}">
+          {{title}}
+        </a>
+      </p>
+
+      <div>Creator:
+        <a
+          href="/api/v1/users/{{organizer_id._id}}"
+        >{{organizer_id.username}}</a></div>
     </article>
+    <hr />
+
   {{/each}}
-  <hr />
+  
 
   {{#if page_details.is_prev_page}}
     <a
@@ -20,10 +31,10 @@
   {{/if}}
   <a
     href="/events?page={{page_details.current_page}}&limit={{page_details.page_limit}}"
-  >{{page_details.current_page}}</a>
+  >Page: {{page_details.current_page}}</a>
   {{#if page_details.is_next_page}}
     <a
       href="/events?page={{page_details.next_page}}&limit={{page_details.page_limit}}"
-    >-&gt;</a>
+    > -&gt;</a>
   {{/if}}
 </main>

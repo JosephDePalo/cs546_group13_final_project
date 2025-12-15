@@ -9,18 +9,18 @@
   </head>
 
   <body>
-    <nav>
-      <ul>
+    <nav class="top-nav">
+      <ul class="nav-list">
         <li><a href="/home">Home</a></li>
         <li><a href="/leaderboard">Leaderboard</a></li>
 
         {{#if logged_in}}
           <li><a href="/events">Feed</a></li>
           <li><a href="/api/v1/users/{{user_id}}">Profile</a></li>
-          <li><a href="/api/v1/users/logout">Logout</a></li>
+          <li class="nav-log-btn"><a href="/api/v1/users/logout">Logout</a></li>
         {{else}}
           <li><a href="/register">Register</a></li>
-          <li><a href="/login">Login</a></li>
+          <li class="nav-log-btn"><a href="/login">Login</a></li>
         {{/if}}
       </ul>
     </nav>
