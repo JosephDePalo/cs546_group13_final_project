@@ -98,6 +98,31 @@ export const renderEvent = async (req, res) => {
           id: req.user._id.toString(),
         }
       : null;
+    let friends_attending = [];
+
+    if (req.user) {
+      //find accepted friendships
+      const friendships = await Friendship.find({
+        status: "accepted",
+        $or: [{ user_id: req.user._id }, { friend_id: req.user._id }],
+      }).lean();
+      const friendIds = friendships.map((f) =>
+        f.user_id.toString() === req.user._id.toString()
+          ? f.friend_id
+          : f.user_id,
+      );
+      const friendRegs = await EventRegistration.find({
+        event_id: eventId,
+        user_id: { $in: friendIds },
+        cancelled: false,
+      })
+        .populate("user_id", "username profile_picture_url")
+        .lean();
+      friends_attending = friendRegs.map((r) => ({
+        ...r.user_id,
+        id: r.user_id._id.toString(),
+      }));
+    }
 
     res.render("event_details", {
       page_title: `${event.title} | Volunteer Forum`,
@@ -113,6 +138,7 @@ export const renderEvent = async (req, res) => {
       formatted_end_time,
       user: sUser,
       comments: commentsWithReplies, //added by Julian
+      friends_attending,
     });
   } catch (err) {
     console.error("Get event error:", err.message);

@@ -262,9 +262,10 @@ export const getUserById = async (req, res) => {
     let is_requester = false;
     let pending_requests = [];
     let friends = [];
+    let friendship;
 
     if (currentUser) {
-      const friendship = await Friendship.findOne({
+      friendship = await Friendship.findOne({
         $or: [
           { user_id: currentUser._id, friend_id: profileUser._id },
           { user_id: profileUser._id, friend_id: currentUser._id },
@@ -311,6 +312,7 @@ export const getUserById = async (req, res) => {
       friendship_status,
       is_requester,
       pending_requests,
+      friendship,
       friends,
       is_owner_or_admin:
         currentUser &&
