@@ -319,6 +319,7 @@ export const renderFriendEvents = async (req, res) => {
       events,
       logged_in: Boolean(req.user),
       on_friends_page: true,
+      user: req.user?.toObject(),
       page_title: "Friends Event Feed | Volunteer Forum",
       user_id: req.user ? req.user._id : null,
       page_details: {
