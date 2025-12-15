@@ -37,6 +37,14 @@ export const renderEvent = async (req, res) => {
         message: `Event not found.`,
       });
     }
+    if (event.disabled && !req.user.is_admin) {
+      return res.status(403).render("error", {
+        page_title: "Register | Volunteer Forum",
+        logged_in: Boolean(req.user),
+        user_id: req.user ? req.user._id : null,
+        message: `You are not authorized to view a disabled event.`,
+      });
+    }
 
     const formatted_start_time = formatDateTimeLocal(event.start_time);
     const formatted_end_time = formatDateTimeLocal(event.end_time);
