@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.js";
 import User from "../models/user.model.js";
 import Friendship from "../models/friendship.model.js";
+import xss from "xss";
 
 // @desc     Auth user, set JWT cookie, redirect to protected page
 // @route    POST /api/v1/users/login
