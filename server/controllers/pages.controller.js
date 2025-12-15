@@ -3,6 +3,7 @@ import Event from "../models/event.model.js";
 import Comment from "../models/comments.model.js";
 import { formatDateTimeLocal } from "../utils/helpers.js";
 import EventRegistration from "../models/eventreg.model.js";
+import Friendship from "../models/friendship.model.js";
 
 export const renderHome = async (req, res) => {
   const top_users = await User.getTopUsers(3);
@@ -13,7 +14,6 @@ export const renderHome = async (req, res) => {
     .sort({ created_at: -1 })
     .limit(3)
     .lean();
-  console.log(top_users);
   res.render("home", {
     page_title: "Volunteer Forum",
     logged_in: Boolean(req.user),
@@ -136,6 +136,7 @@ export const renderEventsList = async (req, res) => {
       page_title: "Event Feed | Volunteer Forum",
       logged_in: Boolean(req.user),
       user_id: req.user ? req.user._id : null,
+      on_friends_page: false,
       page_details: {
         is_next_page: pageCount > page,
         next_page: parseInt(page) + 1,
@@ -255,4 +256,60 @@ export const renderNewReport = (req, res, target_type) => {
     target_type: target_type,
     target_id: req.params.id,
   });
+};
+
+export const renderFriendEvents = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const friendships = await Friendship.find({
+      status: "accepted",
+      $or: [{ user_id: userId }, { friend_id: userId }],
+    });
+    const friendIds = friendships.map((f) =>
+      f.user_id.equals(userId) ? f.friend_id : f.user_id,
+    );
+    const registrations = await EventRegistration.find({
+      user_id: { $in: friendIds },
+      cancelled: false,
+    });
+    const eventIds = [
+      ...new Set(registrations.map((r) => r.event_id.toString())),
+    ];
+    const events = await Event.find({
+      _id: { $in: eventIds },
+      disabled: false,
+      status: { $in: ["Upcoming", "Ongoing"] },
+    })
+      .populate("organizer_id", "username profile_picture_url")
+      .sort({ start_time: 1 })
+      .lean();
+
+    const { page = 1, limit = 20 } = req.query;
+    const eventCount = await Event.countDocuments();
+    const pageCount = Math.ceil(eventCount / limit);
+    res.render("event_feed", {
+      events,
+      logged_in: Boolean(req.user),
+      on_friends_page: true,
+      page_title: "Friends Event Feed | Volunteer Forum",
+      user_id: req.user ? req.user._id : null,
+      page_details: {
+        is_next_page: pageCount > page,
+        next_page: parseInt(page) + 1,
+        is_prev_page: page != 1,
+        prev_page: parseInt(page) - 1,
+        current_page: page,
+        page_limit: limit,
+      },
+    });
+  } catch (err) {
+    console.error("Get friend events error:", err.message);
+    return res.status(500).render("error", {
+      page_title: "Register | Volunteer Forum",
+      logged_in: Boolean(req.user),
+      user_id: req.user ? req.user._id : null,
+      message: `Unable to fetch friend events.`,
+    });
+  }
 };

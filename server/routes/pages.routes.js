@@ -10,6 +10,7 @@ import {
   renderEditProfile,
   renderEvent,
   renderEventsList,
+  renderFriendEvents,
 } from "../controllers/pages.controller.js";
 import {
   isAdminOrEventOrganizer,
@@ -34,8 +35,9 @@ router.get(
 );
 
 router.get("/events/", isLoggedIn, renderEventsList);
+router.get("/events/friends", isLoggedIn, renderFriendEvents);
+router.get("/events/new_event", isLoggedIn, renderNewEvent);
 router.get("/events/:id", isLoggedIn, renderEvent);
-router.get("/event/new_event", isLoggedIn, renderNewEvent);
 router.get(
   "/event/manage/:id",
   isLoggedIn,
