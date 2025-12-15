@@ -4,6 +4,7 @@ import User from "../models/user.model.js";
 import { formatDateTimeLocal } from "../utils/helpers.js";
 import Comment from "../models/comments.model.js";
 import Friendship from "../models/friendship.model.js";
+import xss from "xss";
 
 // @desc     Create new event
 // @route    POST /api/events
