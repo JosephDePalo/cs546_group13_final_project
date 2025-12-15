@@ -22,7 +22,7 @@ export const newReport = async (req, res) => {
     let valid_reason = xss(reason);
     let valid_description = xss(description);
     let valid_severity = xss(severity);
-    
+
     switch (target_type) {
       case "event":
         targetExists = await Event.exists({ _id: target_id });

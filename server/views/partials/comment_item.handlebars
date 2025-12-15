@@ -1,6 +1,7 @@
 <div class="comment {{#if parent_comment_id}}comment-reply{{/if}}" {{!--To make sure comment and sub-comment have
   different layout--}} data-comment-id="{{id}}">
   <div class="comment-header">
+   <h3> {{user_id.username}}</h3>
     <a
     class="comment-username"
     href="/api/v1/users/{{user_id._id}}"

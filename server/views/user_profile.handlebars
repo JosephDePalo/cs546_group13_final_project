@@ -1,130 +1,166 @@
-<h1>{{profileUser.username}}</h1>
+<section class="event-feed-headers">
 
-<section>
-  <h2>Basic Info</h2>
-  <ul>
-    {{#if first_name}}<li>First Name: {{profileUser.first_name}}</li>{{/if}}
-    {{#if last_name}}<li>Last Name: {{profileUser.last_name}}</li>{{/if}}
-    {{#if email}}<li>Email: {{profileUser.email}}</li>{{/if}}
-    {{#if phone}}<li>Phone: {{profileUser.phone}}</li>{{/if}}
-    {{#if gender}}<li>Gender: {{profileUser.gender}}</li>{{/if}}
-    {{#if age}}<li>Age: {{profileUser.age}}</li>{{/if}}
-    {{#if city}}<li>City: {{profileUser.city}}</li>{{/if}}
-    {{#if state}}<li>State: {{profileUser.state}}</li>{{/if}}
-  </ul>
-</section>
+  <h1 class="profile-title">
+    user:
+    <span>{{profileUser.username}}</span>
+  </h1>
 
-<section>
-  <h2>Account Stats</h2>
-  <ul>
-    <li>Points: {{profileUser.account_stats.points}}</li>
-    <li>Rank: {{profileUser.account_stats.rank}}</li>
-    <li>Events Attended: {{profileUser.account_stats.events_attended_count}}</li>
-    <li>Events Organized: {{profileUser.account_stats.events_organized}}</li>
-    <li>Friends: {{profileUser.account_stats.friends_count}}</li>
-    <li>Comments: {{profileUser.account_stats.comments_count}}</li>
-  </ul>
-</section>
+  <section>
+    <h2>Basic Info</h2>
+    <ul>
+      {{#if profileUser.first_name}}<li>First Name:
+          {{profileUser.first_name}}</li>{{/if}}
+      {{#if profileUser.last_name}}<li>Last Name:
+          {{profileUser.last_name}}</li>{{/if}}
+      {{#if profileUser.email}}<li>Email: {{profileUser.email}}</li>{{/if}}
+      {{#if profileUser.phone}}<li>Phone: {{profileUser.phone}}</li>{{/if}}
+      {{#if profileUser.gender}}<li>Gender: {{profileUser.gender}}</li>{{/if}}
+      {{#if profileUser.age}}<li>Age: {{profileUser.age}}</li>{{/if}}
+      {{#if profileUser.city}}<li>City: {{profileUser.city}}</li>{{/if}}
+      {{#if profileUser.state}}<li>State: {{profileUser.state}}</li>{{/if}}
+    </ul>
+  </section>
 
-{{! need to login}}
-{{#if user}}
-<hr>
+  <section>
+    <h2>Account Stats</h2>
+    <ul>
+      <li>Points: {{profileUser.account_stats.points}}</li>
+      <li>Rank: {{profileUser.account_stats.rank}}</li>
+      <li>Events Attended:
+        {{profileUser.account_stats.events_attended_count}}</li>
+      <li>Events Organized: {{profileUser.account_stats.events_organized}}</li>
+      <li>Friends: {{profileUser.account_stats.friends_count}}</li>
+      <li>Comments: {{profileUser.account_stats.comments_count}}</li>
+    </ul>
+  </section>
 
-{{!-- Viewing myself --}}
-{{#if is_self}}
+  {{#if user}}
+    <hr />
 
-<section id="pending-requests">
-  <h2>Pending Friend Requests</h2>
+    {{#if is_self}}
 
-  {{#if pending_requests.length}}
-  <ul class="pending-list">
-    {{#each pending_requests}}
-    <li class="pending-item" data-friendship-id="{{this._id}}">
-      <a href="/user/{{this.friend_id._id}}">
-        {{this.friend_id.username}}
+      <section id="pending-requests">
+        <h2>Pending Friend Requests</h2>
+
+        {{#if pending_requests.length}}
+          <ul class="pending-list">
+            {{#each pending_requests}}
+              <li class="pending-item" data-friendship-id="{{this._id}}">
+                <a href="/api/v1/users/{{this.friend_id._id}}">
+                  {{this.friend_id.username}}
+                </a>
+
+                <button
+                  type="button"
+                  class="btn btn-primary accept-btn"
+                  data-friendship-id="{{this._id}}"
+                >
+                  Accept
+                </button>
+
+                <button
+                  type="button"
+                  class="btn reject-btn"
+                  data-friendship-id="{{this._id}}"
+                >
+                  Reject
+                </button>
+              </li>
+            {{/each}}
+          </ul>
+        {{else}}
+          <p>No pending requests.</p>
+        {{/if}}
+      </section>
+
+      <hr />
+
+      <section id="friends-list">
+        <h2>Friends</h2>
+
+        {{#if friends.length}}
+          <ul class="friends-list">
+            {{#each friends}}
+              <li class="friend-item">
+                <a href="/api/v1/users/{{this._id}}">
+                  {{this.username}}
+                </a>
+
+                <button
+                  type="button"
+                  class="btn remove-friend-btn"
+                  data-friendship-id="{{this.friendship_id}}"
+                >
+                  Remove Friend
+                </button>
+              </li>
+            {{/each}}
+          </ul>
+        {{else}}
+          <p>You have no friends yet.</p>
+        {{/if}}
+      </section>
+
+    {{else}}
+
+      <section
+        id="friendship-actions"
+        data-target-user-id="{{profileUser._id}}"
+      >
+
+        {{#if (eq friendship_status "none")}}
+          <button
+            type="button"
+            class="btn btn-primary add-friend-btn"
+            data-user-id="{{profileUser._id}}"
+          >
+            Add Friend
+          </button>
+        {{/if}}
+
+        {{#if (eq friendship_status "pending")}}
+          {{#if is_requester}}
+            <p class="pending-text">Friend request sent!</p>
+          {{else}}
+            <p class="pending-text">
+              This user has sent you a request. Go to your profile page to
+              accept or reject.
+            </p>
+          {{/if}}
+        {{/if}}
+
+        {{#if (eq friendship_status "accepted")}}
+          <button
+            type="button"
+            class="btn remove-friend-btn"
+            data-friendship-id="{{profileUser.friendship_id}}"
+          >
+            Remove Friend
+          </button>
+        {{/if}}
+
+      </section>
+
+    {{/if}}
+
+    {{#if is_owner_or_admin}}
+      <hr />
+      <a href="/user/edit/{{profileUser._id}}" class="btn btn-primary">
+        Edit Profile
       </a>
+    {{/if}}
 
-      <button type="button" class="btn btn-primary accept-btn" data-friendship-id="{{this._id}}">
-        Accept
-      </button>
-
-      <button type="button" class="btn reject-btn" data-friendship-id="{{this._id}}">
-        Reject
-      </button>
-    </li>
-    {{/each}}
-  </ul>
   {{else}}
-  <p>No pending requests.</p>
+    <hr />
+    <p>Please <a href="/home">log in</a> to manage friends.</p>
   {{/if}}
+
+  {{#unless is_self}}
+    <a href="/report/user/{{profileUser._id}}" class="btn btn-primary">
+      Report User
+    </a>
+  {{/unless}}
+
 </section>
-
-<hr>
-
-<section id="friends-list">
-  <h2>Friends</h2>
-
-  {{#if friends.length}}
-  <ul class="friends-list">
-    {{#each friends}}
-    <li class="friend-item">
-      <a href="/user/{{this._id}}">
-        {{this.username}}
-      </a>
-
-      <button type="button" class="btn remove-friend-btn" data-friendship-id="{{this.friendship_id}}">
-        Remove Friend
-      </button>
-    </li>
-    {{/each}}
-  </ul>
-  {{else}}
-  <p>You have no friends yet.</p>
-  {{/if}}
-</section>
-
-{{!-- Not myself --}}
-{{else}}
-
-<section id="friendship-actions" data-target-user-id="{{profileUser._id}}">
-
-  {{!-- if none -> show Add Friend --}}
-  {{#if (eq friendship_status "none")}}
-  <button type="button" class="btn btn-primary add-friend-btn" data-user-id="{{profileUser._id}}">
-    Add Friend
-  </button>
-  {{/if}}
-
-  {{!-- if Pending -> show Pending label --}}
-  {{#if (eq friendship_status "pending")}}
-  {{#if is_requester}}
-  <p class="pending-text">Friend request sent!</p>
-  {{else}}
-  <p class="pending-text">This user has sent you a request. Go to your profile page to accept or reject.</p>
-  {{/if}}
-  {{/if}}
-
-  {{!-- if Accepted -> show Remove Friend --}}
-  {{#if (eq friendship_status "accepted")}}
-  <button type="button" class="btn remove-friend-btn" data-friendship-id="{{this.friendship_id}}">
-    Remove Friend
-  </button>
-  {{/if}}
-</section>
-
-{{/if}}
-
-{{#if is_owner_or_admin}}
-<hr>
-<a href="/user/edit/{{profileUser._id}}" class="btn btn-primary">
-  Edit Profile
-</a>
-{{/if}}
-
-{{else}}
-<hr>
-<p>Please <a href="/home">log in</a> to manage friends.</p>
-{{/if}}
-<a href="/report/user/{{_id}}" class="btn btn-primary">Report User</a>
 
 <script src="/js/friendship.clientside.js"></script>

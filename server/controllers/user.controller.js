@@ -64,7 +64,7 @@ export const register = async (req, res) => {
     // XSS
     let valid_username = xss(username);
     let valid_email = xss(email);
-    
+
     const user = await User.create({
       username: valid_username,
       email: valid_email,

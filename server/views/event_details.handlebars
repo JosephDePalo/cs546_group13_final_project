@@ -1,29 +1,38 @@
-<h1>Event Details - {{title}} </h1>
-<a href="/report/event/{{_id}}" class="btn btn-warning">
-  Report Event
-</a>
-<div class="actions">
-  {{#if (eq status "Upcoming")}}
-    {{#if isRegistered}}
-      <button id="register-btn"  data-event-id="{{_id}}" class="btn btn-danger">
-        Unregister
-      </button>
-    {{else}}
-      <button  id="register-btn"    data-event-id="{{_id}}"  class="btn btn-primary">
-        Register
-      </button>
-    {{/if}}
-  {{else}}
-    <p class="text-muted"> Registration is closed for this event.</p>
-  {{/if}}
+<div class="event-feed-headers">
 
-  <div id="register-error"></div>
+  <div class="event-details-header">
+    <h1>Event- {{title}}</h1>
+    <a href="/report/event/{{_id}}" class=" report-event btn btn-warning">
+      report
+    </a>
+  </div>
+
+  <div class="actions">
+    {{#if (eq status "Upcoming")}}
+      {{#if isRegistered}}
+        <button id="register-btn" data-event-id="{{_id}}" class="btn btn-danger">
+          Unregister
+        </button>
+      {{else}}
+        <button id="register-btn" data-event-id="{{_id}}" class="btn btn-primary">
+          Register
+        </button>
+      {{/if}}
+    {{else}}
+      <p class="text-muted">Registration is closed for this event.</p>
+    {{/if}}
+
+    <div id="register-error"></div>
+  </div>
+
 </div>
 
 
-<section class="event-details">
+
+<section class="event-details event-feed-headers">
 
   <h2>Overview</h2>
+  <hr/>
 
   <div class="detail-item">
     <span class="detail-label">Title</span>
@@ -87,7 +96,7 @@
 
 {{!-- ===================== COMMENTS ===================== --}}
 
-<section class="comments-section">
+<section class="comments-section event-feed-headers">
 
   <h2>Comments</h2>
 
@@ -110,20 +119,20 @@
 </section>
 
 
-<div class="actions">
-  {{#if is_owner_or_admin}}
-  <a href="/event/manage/{{_id}}" class="btn btn-primary">
+
+<section class="links-section event-feed-headers">
+  <h2>Quick Links:</h2>
+    {{#if is_owner_or_admin}}
+  <a href="/event/manage/{{_id}}" class="btn btn-primary manage-btn">
     Manage Event
   </a>
-  <form action="/api/v1/events/{{_id}}?_method=DELETE" method="POST" id="delete-form">
-    <button type="submit" class="btn btn-primary">Delete Event</button>
+  <form  action="/api/v1/events/{{_id}}?_method=DELETE" method="POST" id="delete-form">
+    <button type="submit" class="btn btn-primary btn-delete">Delete Event</button>
   </form>
   {{/if}}
 
-  <a href="/events" class="btn btn-primary">
-    Back to Events
-  </a>
-</div>
+</section>
+
 
 {{!-- ===================== SCRIPTS ===================== --}}
 <script src="/js/eventreg.clientside.js"></script>
