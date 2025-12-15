@@ -1,6 +1,7 @@
 import Comment from "../models/comments.model.js";
 import Event from "../models/event.model.js";
 import User from "../models/user.model.js";
+import xss from "xss";
 
 // Create a comment
 export const createComment = async (req, res) => {
@@ -73,11 +74,15 @@ export const createComment = async (req, res) => {
       replyDepth = parentComment.reply_depth + 1;
     }
 
+    // XSS
+
+    let valid_content = xss(content);
+
     // Create a comment
     const comment = await Comment.create({
       user_id: userId,
       event_id,
-      content,
+      content: valid_content,
       parent_comment_id: parent_comment_id || null,
       reply_depth: replyDepth,
     });
