@@ -1,8 +1,9 @@
 // Imports
 import Report from "../models/report.model.js";
 import Event from "../models/event.model.js";
-import Comment from "../models/comments.model.js";
+import Comment from "../models/comments.model.js"
 import User from "../models/user.model.js";
+import xss from "xss";
 
 // @desc     Create new report
 // @access   Private
@@ -15,6 +16,12 @@ export const newReport = async (req, res) => {
     }
 
     let targetExists = false;
+
+    // XSS calls
+
+    let valid_reason = xss(reason);
+    let valid_description = xss(description);
+    let valid_severity = xss(severity);
 
     switch (target_type) {
       case "event":
@@ -38,27 +45,16 @@ export const newReport = async (req, res) => {
       return res.status(400).json({ message: "You cannot report yourself." });
     }
 
-    let num_reports_events,
-      num_reports_users,
-      num_reports_comments,
-      desired_events,
-      reporter_id,
-      disabled_data,
-      disabledEvent,
-      desired_comments,
-      desired_users,
-      disabledComment;
-
     switch (target_type) {
       case "event":
-        num_reports_events = 0;
-        desired_events = await Report.find({
+        let num_reports_events = 0;
+        let desired_events = await Report.find({
           target_type: "event",
-          target_id: target_id,
+          target_id: target_id
         });
 
         for (let i = 0; i < desired_events.length; i++) {
-          reporter_id = desired_events[i].reporter_id;
+          let reporter_id = desired_events[i].reporter_id;
           if (reporter_id.toString() === req.user.id) {
             return res.status(500).json({
               message: "You have already reported this item.",
@@ -67,39 +63,40 @@ export const newReport = async (req, res) => {
         }
 
         num_reports_events = desired_events.length;
-        if (num_reports_events + 1 >= 2) {
-          try {
-            disabled_data = {
-              disabled: true,
-              disabled_at: new Date(),
-            };
+        if ((num_reports_events + 1) >= 2) {
+            try {
+                let disabled_data = {
+                    disabled: true,
+                    disabled_at: new Date(),
+                };
 
-            disabledEvent = await Event.findByIdAndUpdate(
-              target_id,
-              disabled_data,
-              {
-                new: true,
-              },
-            );
+                const disabledEvent = await Event.findByIdAndUpdate(
+                    target_id,
+                    disabled_data,
+                    {
+                        new: true,
+                    },
+                );
 
-            if (!disabledEvent) {
-              return res.status(404).json({ message: "Event not found." });
+                if (!disabledEvent) {
+                    return res.status(404).json({ message: "Event not found." });
+                }
+
+            } catch (err) {
+                console.error("Disable event error:", err.message);
+                res.status(500).json({ message: "Unable to disable event." });
             }
-          } catch (err) {
-            console.error("Disable event error:", err.message);
-            res.status(500).json({ message: "Unable to disable event." });
-          }
         }
         break;
       case "comment":
-        num_reports_comments = 0;
-        desired_comments = await Report.find({
-          target_type: "comment",
-          target_id: target_id,
-        });
+        let num_reports_comments = 0;
+        let desired_comments = await Report.find({
+            target_type: "comment",
+            target_id: target_id 
+          });
 
         for (let i = 0; i < desired_comments.length; i++) {
-          reporter_id = desired_comments[i].reporter_id;
+          let reporter_id = desired_comments[i].reporter_id;
           if (reporter_id.toString() === req.user.id) {
             return res.status(500).json({
               message: "You have already reported this item.",
@@ -107,41 +104,43 @@ export const newReport = async (req, res) => {
           }
         }
 
-        num_reports_comments = desired_comments.length;
-        if (num_reports_comments + 1 >= 2) {
-          try {
-            disabled_data = {
-              disabled: true,
-              disabled_reason: reason,
-              disabled_at: new Date(),
-            };
+        num_reports_comments = desired_comments.length; 
+        if ((num_reports_comments + 1) >= 2) {
+            try {
+                let disabled_data = {
+                    disabled: true,
+                    disabled_reason: valid_reason,
+                    disabled_at: new Date(),
+                };
 
-            disabledComment = await Comment.findByIdAndUpdate(
-              target_id,
-              disabled_data,
-              {
-                new: true,
-              },
-            );
+                const disabledComment = await Comment.findByIdAndUpdate(
+                    target_id,
+                    disabled_data,
+                    {
+                        new: true,
+                    },
+                );
 
-            if (!disabledComment) {
-              return res.status(404).json({ message: "Comment not found." });
+                if (!disabledComment) {
+                    return res.status(404).json({ message: "Comment not found." });
+                }
+
+            } catch (err) {
+                console.error("Disable comment error:", err.message);
+                res.status(500).json({ message: "Unable to disable comment." });
             }
-          } catch (err) {
-            console.error("Disable comment error:", err.message);
-            res.status(500).json({ message: "Unable to disable comment." });
-          }
         }
         break;
       case "user":
-        num_reports_users = 0;
-        desired_users = await Report.find({
-          target_type: "user",
-          target_id: target_id,
-        });
+        let num_reports_users = 0;
+        let desired_users = await Report.find({
+            target_type: "user",
+            target_id: target_id
+          });
+  
 
         for (let i = 0; i < desired_users.length; i++) {
-          reporter_id = desired_users[i].reporter_id;
+          let reporter_id = desired_users[i].reporter_id;
           if (reporter_id.toString() === req.user.id) {
             return res.status(500).json({
               message: "You have already reported this item.",
@@ -151,27 +150,28 @@ export const newReport = async (req, res) => {
 
         num_reports_users = desired_users.length;
 
-        if (num_reports_users + 1 >= 2) {
-          try {
-            disabled_data = {
-              is_active: false,
-            };
+        if ((num_reports_users + 1) >= 2) {
+            try {
+                let disabled_data = {
+                    is_active: false
+                };
 
-            const disabledUser = await User.findByIdAndUpdate(
-              target_id,
-              disabled_data,
-              {
-                new: true,
-              },
-            );
+                const disabledUser = await User.findByIdAndUpdate(
+                    target_id,
+                    disabled_data,
+                    {
+                        new: true,
+                    },
+                );
 
-            if (!disabledUser) {
-              return res.status(404).json({ message: "User not found." });
+                if (!disabledUser) {
+                    return res.status(404).json({ message: "User not found." });
+                }
+
+            } catch (err) {
+                console.error("Disable user error:", err.message);
+                res.status(500).json({ message: "Unable to disable user." });
             }
-          } catch (err) {
-            console.error("Disable user error:", err.message);
-            res.status(500).json({ message: "Unable to disable user." });
-          }
         }
         break;
       default:
@@ -182,15 +182,14 @@ export const newReport = async (req, res) => {
       reporter_id: req.user._id,
       target_type,
       target_id,
-      reason,
-      description,
-      severity,
+      reason: valid_reason,
+      description: valid_description,
+      severity: valid_severity,
     });
 
     res.status(201).json({
       success: true,
-      // redirectTo: `/${target_type}s/${target_id}`,
-      redirectTo: "/home",
+      redirectTo: `/${target_type}s/${target_id}`,
     });
   } catch (err) {
     if (err.code === 11000) {
@@ -207,137 +206,137 @@ export const newReport = async (req, res) => {
 // @desc     Get reports
 // @access   Public
 
-export const getReport = async (req, res) => {
-  try {
-    const report = await Report.findById(req.params.id);
+// export const getReport = async (req, res) => {
+//   try {
+//     const report = await Report.findById(req.params.id);
 
-    if (!report) {
-      return res.status(404).json({ message: "Report not found." });
-    }
+//     if (!report) {
+//       return res.status(404).json({ message: "Report not found." });
+//     }
 
-    res.json(report);
-  } catch (err) {
-    console.error("Get report error:", err.message);
-    res.status(500).json({ message: "Unable to fetch report." });
-  }
-};
+//     res.json(report);
+//   } catch (err) {
+//     console.error("Get report error:", err.message);
+//     res.status(500).json({ message: "Unable to fetch report." });
+//   }
+// };
 
-// @desc     Get report
-// @access   Public
+// // @desc     Get report
+// // @access   Public
 
-export const getAllReports = async (req, res) => {
-  try {
-    const reports = await Report.find();
-    res.json(reports);
-  } catch (err) {
-    console.error("Get all reports error:", err.message);
-    res.status(500).json({ message: "Unable to fetch reports." });
-  }
-};
+// export const getAllReports = async (req, res) => {
+//   try {
+//     const reports = await Report.find();
+//     res.json(reports);
+//   } catch (err) {
+//     console.error("Get all reports error:", err.message);
+//     res.status(500).json({ message: "Unable to fetch reports." });
+//   }
+// };
 
-// @desc     Update report
-// @access   Private/Admin
+// // @desc     Update report
+// // @access   Private/Admin
 
-export const updateReport = async (req, res) => {
-  try {
-    let new_report = req.body;
+// export const updateReport = async (req, res) => {
+//   try {
+//     let new_report = req.body;
 
-    delete new_report._id;
+//     delete new_report._id;
 
-    const report = await Report.findById(req.params.id);
-    if (!report) {
-      return res.status(404).json({ message: "Report not found." });
-    } else if (!req.user.is_admin) {
-      return res.status(403).json({
-        message: "User does not have permissions to edit this report.",
-      });
-    }
+//     const report = await Report.findById(req.params.id);
+//     if (!report) {
+//       return res.status(404).json({ message: "Report not found." });
+//     } else if (!req.user.is_admin) {
+//       return res.status(403).json({
+//         message: "User does not have permissions to edit this report.",
+//       });
+//     }
 
-    const updatedReport = await Report.findByIdAndUpdate(
-      req.params.id,
-      new_report,
-      {
-        new: true,
-      },
-    );
+//     const updatedReport = await Report.findByIdAndUpdate(
+//       req.params.id,
+//       new_report,
+//       {
+//         new: true,
+//       },
+//     );
 
-    if (!updatedReport) {
-      return res.status(404).json({ message: "Report not found." });
-    }
-  } catch (err) {
-    console.error("Update report error:", err.message);
-    res.status(500).json({ message: "Unable to update report." });
-  }
-};
+//     if (!updatedReport) {
+//       return res.status(404).json({ message: "Report not found." });
+//     }
+//   } catch (err) {
+//     console.error("Update report error:", err.message);
+//     res.status(500).json({ message: "Unable to update report." });
+//   }
+// };
 
-// @desc     Delete report
-// @access   Private/Admin
+// // @desc     Delete report
+// // @access   Private/Admin
 
-export const deleteReport = async (req, res) => {
-  try {
-    const report = await Report.findById(req.params.id);
+// export const deleteReport = async (req, res) => {
+//   try {
+//     const report = await Report.findById(req.params.id);
 
-    if (!report) {
-      return res.status(404).json({ message: "Report not found." });
-    } else if (!req.user.is_admin) {
-      return res
-        .status(403)
-        .json({ message: "Only admins can delete reports!" });
-    }
+//     if (!report) {
+//       return res.status(404).json({ message: "Report not found." });
+//     } else if (!req.user.is_admin) {
+//       return res
+//         .status(403)
+//         .json({ message: "Only admins can delete reports!" });
+//     }
 
-    await report.deleteOne();
+//     await report.deleteOne();
 
-    res.json(report);
-  } catch (err) {
-    console.error("Delete report error:", err.message);
-    res.status(500).json({ message: "Unable to delete report" });
-  }
-};
+//     res.json(report);
+//   } catch (err) {
+//     console.error("Delete report error:", err.message);
+//     res.status(500).json({ message: "Unable to delete report" });
+//   }
+// };
 
-// @desc     resolve the report once evaluated by an admin
-// @access   Private/Admin
+// // @desc     resolve the report once evaluated by an admin
+// // @access   Private/Admin
 
-export const resolveReport = async (req, res) => {
-  try {
-    const report = await Report.findById(req.params.id);
+// export const resolveReport = async (req, res) => {
+//   try {
+//     const report = await Report.findById(req.params.id);
 
-    if (!report) {
-      return res.status(404).json({ message: "Report not found." });
-    } else if (!req.user.is_admin) {
-      return res
-        .status(403)
-        .json({ message: "Only admins can delete reports!" });
-    }
+//     if (!report) {
+//       return res.status(404).json({ message: "Report not found." });
+//     } else if (!req.user.is_admin) {
+//       return res
+//         .status(403)
+//         .json({ message: "Only admins can delete reports!" });
+//     }
 
-    const {
-      resolution_status,
-      responding_admin_id,
-      responding_admin_notes,
-      resolution_decision,
-    } = req.body;
-    let current_date = new Date();
+//     const {
+//       resolution_status,
+//       responding_admin_id,
+//       responding_admin_notes,
+//       resolution_decision,
+//     } = req.body;
+//     let current_date = new Date();
 
-    const resolvedReport = await Report.findByIdAndUpdate(
-      req.params.id,
-      {
-        resolution_status: resolution_status,
-        responding_admin_id: responding_admin_id,
-        responding_admin_notes: responding_admin_notes,
-        resolution_decision: resolution_decision,
-        resolved_at: current_date,
-      },
-      {
-        new: true,
-      },
-    );
+//     const resolvedReport = await Report.findByIdAndUpdate(
+//       req.params.id,
+//       {
+//         resolution_status: resolution_status,
+//         responding_admin_id: responding_admin_id,
+//         responding_admin_notes: responding_admin_notes,
+//         resolution_decision: resolution_decision,
+//         resolved_at: current_date,
+//       },
+//       {
+//         new: true,
+//       },
+//     );
 
-    if (!resolvedReport) {
-      return res.status(404).json({ message: "Report not found." });
-    }
+//     if (!resolvedReport) {
+//       return res.status(404).json({ message: "Report not found." });
+//     }
 
-    res.json(resolvedReport);
-  } catch (err) {
-    console.error("Resolve report error:", err.message);
-    res.status(500).json({ message: "Unable to resolve report" });
-  }
-};
+//     res.json(resolvedReport);
+//   } catch (err) {
+//     console.error("Resolve report error:", err.message);
+//     res.status(500).json({ message: "Unable to resolve report" });
+//   }
+// };
