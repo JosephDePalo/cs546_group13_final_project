@@ -1,7 +1,28 @@
 <h1>Event Management - {{title}}</h1>
+<dl id="errors" class="error" style="display:none;"></dl>
+
+<section class="event-management-section">
 
 <form id="overview-edit-form" name="overview-edit-form" action="/api/v1/events/{{_id}}?_method=PUT" method="POST">
+ <h2>Status</h2>
 
+<div class="form-item">
+  <label for="status">Event Status</label>
+  <select id="status" name="status">
+    <option value="Upcoming" {{#if (eq status "Upcoming")}}selected{{/if}}>
+      Upcoming
+    </option>
+    <option value="Ongoing" {{#if (eq status "Ongoing")}}selected{{/if}}>
+      Ongoing
+    </option>
+    <option value="Completed" {{#if (eq status "Completed")}}selected{{/if}}>
+      Completed
+    </option>
+    <option value="Cancelled" {{#if (eq status "Cancelled")}}selected{{/if}}>
+      Cancelled
+    </option>
+  </select>
+</div>
   <h2>Overview</h2>
 
   <div class="form-item">
@@ -11,7 +32,9 @@
 
   <div class="form-item">
     <label for="Description">Description</label>
-    <textarea id="description" rows="5" cols="50">{{description}}</textarea>
+    <textarea id="description" name="description" rows="5" cols="50">
+      {{description}}
+    </textarea>
   </div>
 
   <div class="form-item">
@@ -56,8 +79,51 @@
   </div>
 </form>
 
+<div class="registered-users">
+
+<h2>Registered Users</h2>
+
+{{#if registrations.length}}
+
+{{#if (eq status "Completed")}}
+  {{#if alreadyRewarded}}
+    <button
+      type="button"
+      class="btn btn-secondary"
+      disabled
+    >
+      Users Already Rewarded
+    </button>
+  {{else}}
+    <button
+      type="button"
+      id="reward-users-btn"
+      data-event-id="{{_id}}"
+      class="btn btn-primary"
+    >
+      Reward Registered Users
+    </button>
+  {{/if}}
+{{/if}}
+
+  <ol>
+    {{#each registrations}}
+      <li>Username: 
+        {{this.user_id.username}}
+        <br />
+        <small>Email: {{this.user_id.email}}</small>
+      </li>
+    {{/each}}
+  </ol>
+{{else}}
+  <p>No users have registered for this event.</p>
+{{/if}}
+
+</div>
+</section>
+
+
 <a href="/events/{{_id}}" class="btn btn-primary">Return to Event Details</a>
 <script src="https://code.jquery.com/jquery-3.5.1.js"
         integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 <script src="/js/event.clientside.js"></script>
-</script>

@@ -6,6 +6,7 @@ import {
   updateEventDetails,
   disableEvent,
   deleteEvent,
+  rewardRegisteredUsers,
 } from "../controllers/event.controller.js";
 import {
   cancelEventReg,
@@ -20,6 +21,13 @@ import {
 const router = express.Router();
 
 router.route("/").all(isLoggedIn).get(getEvents).post(newEvent);
+
+router.post(
+  "/:id/rewardRegisteredUsers",
+  isLoggedIn,
+  isAdminOrEventOrganizer,
+  rewardRegisteredUsers
+);
 
 router
   .route("/:id")

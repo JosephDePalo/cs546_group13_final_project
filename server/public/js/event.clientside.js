@@ -128,4 +128,31 @@
       edit_form.submit();
     }
   });
+
+  const rewardBtn = document.getElementById("reward-users-btn");
+
+  if (rewardBtn) {
+    rewardBtn.addEventListener("click", async () => {
+      const eventId = rewardBtn.dataset.eventId;
+      try {
+        const res = await fetch(
+          `/api/v1/events/${eventId}/rewardRegisteredUsers`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+        if (!res.ok) {
+          throw new Error("Failed to reward users");
+        }
+        alert("Registered users rewarded successfully");
+        window.location.reload();
+      } catch (err) {
+        console.error(err);
+        alert("Error rewarding registered users");
+      }
+    });
+  }
 })(jQuery);

@@ -42,6 +42,10 @@ const eventRegSchema = new mongoose.Schema(
       default: null,
       description: "Timestamp of cancellation.",
     },
+    rewarded: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
