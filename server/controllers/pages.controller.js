@@ -162,6 +162,7 @@ export const renderEventsList = async (req, res) => {
       page_title: "Event Feed | Volunteer Forum",
       logged_in: Boolean(req.user),
       user_id: req.user ? req.user._id : null,
+      user: req.user?.toObject(),
       on_friends_page: false,
       page_details: {
         is_next_page: pageCount > page,
