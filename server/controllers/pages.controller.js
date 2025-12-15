@@ -31,7 +31,7 @@ export const renderEvent = async (req, res) => {
 
     if (!event) {
       return res.status(404).render("error", {
-        page_title: "Register | Volunteer Forum",
+        page_title: "Event Not Found | Volunteer Forum",
         logged_in: Boolean(req.user),
         user_id: req.user ? req.user._id : null,
         message: `Event not found.`,
@@ -39,7 +39,7 @@ export const renderEvent = async (req, res) => {
     }
     if (event.disabled && !req.user.is_admin) {
       return res.status(403).render("error", {
-        page_title: "Register | Volunteer Forum",
+        page_title: "Access Denied | Volunteer Forum",
         logged_in: Boolean(req.user),
         user_id: req.user ? req.user._id : null,
         message: `You are not authorized to view a disabled event.`,
@@ -98,6 +98,31 @@ export const renderEvent = async (req, res) => {
           id: req.user._id.toString(),
         }
       : null;
+    let friends_attending = [];
+
+    if (req.user) {
+      //find accepted friendships
+      const friendships = await Friendship.find({
+        status: "accepted",
+        $or: [{ user_id: req.user._id }, { friend_id: req.user._id }],
+      }).lean();
+      const friendIds = friendships.map((f) =>
+        f.user_id.toString() === req.user._id.toString()
+          ? f.friend_id
+          : f.user_id,
+      );
+      const friendRegs = await EventRegistration.find({
+        event_id: eventId,
+        user_id: { $in: friendIds },
+        cancelled: false,
+      })
+        .populate("user_id", "username profile_picture_url")
+        .lean();
+      friends_attending = friendRegs.map((r) => ({
+        ...r.user_id,
+        id: r.user_id._id.toString(),
+      }));
+    }
 
     res.render("event_details", {
       page_title: `${event.title} | Volunteer Forum`,
@@ -113,11 +138,12 @@ export const renderEvent = async (req, res) => {
       formatted_end_time,
       user: sUser,
       comments: commentsWithReplies, //added by Julian
+      friends_attending,
     });
   } catch (err) {
     console.error("Get event error:", err.message);
     return res.status(500).render("error", {
-      page_title: "Register | Volunteer Forum",
+      page_title: "Event Error | Volunteer Forum",
       logged_in: Boolean(req.user),
       user_id: req.user ? req.user._id : null,
       message: `Unable to fetch event.`,
@@ -149,7 +175,7 @@ export const renderEventsList = async (req, res) => {
   } catch (err) {
     console.error("Get events error:", err.message);
     return res.status(500).render("error", {
-      page_title: "Register | Volunteer Forum",
+      page_title: "Event Feed Error | Volunteer Forum",
       logged_in: Boolean(req.user),
       user_id: req.user ? req.user._id : null,
       message: `Unable to fetch events.`,
@@ -167,7 +193,7 @@ export const renderRegister = (req, res) => {
 
 export const exampleProtectedPage = (req, res) => {
   res.render("exampleProtectedPage", {
-    page_title: "Protected Page",
+    page_title: "Protected Page | Volunteer Forum",
     logged_in: Boolean(req.user),
     user_id: req.user ? req.user._id : null,
     user: req.user.toObject(),
@@ -230,7 +256,7 @@ export const renderEventManagement = async (req, res) => {
   } catch (err) {
     console.error("renderEventManagement error: " + err.message);
     return res.status(404).render("error", {
-      page_title: "Register | Volunteer Forum",
+      page_title: "Event Not Found | Volunteer Forum",
       logged_in: Boolean(req.user),
       user_id: req.user ? req.user._id : null,
       message: `Event does not exist`,

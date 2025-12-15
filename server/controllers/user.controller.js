@@ -251,6 +251,7 @@ export const getUserById = async (req, res) => {
         page_title: "Register | Volunteer Forum",
         logged_in: Boolean(req.user),
         user_id: req.user ? req.user._id : null,
+        user: req.user?.toObject(),
         message: `User not found.`,
       });
     }
@@ -262,9 +263,10 @@ export const getUserById = async (req, res) => {
     let is_requester = false;
     let pending_requests = [];
     let friends = [];
+    let friendship;
 
     if (currentUser) {
-      const friendship = await Friendship.findOne({
+      friendship = await Friendship.findOne({
         $or: [
           { user_id: currentUser._id, friend_id: profileUser._id },
           { user_id: profileUser._id, friend_id: currentUser._id },
@@ -305,12 +307,13 @@ export const getUserById = async (req, res) => {
     res.render("user_profile", {
       page_title: `${profileUser.username} | Volunteer Forum`,
       logged_in: Boolean(currentUser),
-      user: currentUser,
+      user: currentUser?.toObject(),
       profileUser, //The user being viewed
       is_self,
       friendship_status,
       is_requester,
       pending_requests,
+      friendship,
       friends,
       is_owner_or_admin:
         currentUser &&

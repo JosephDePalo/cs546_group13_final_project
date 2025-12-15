@@ -91,7 +91,7 @@ export const getEvent = async (req, res) => {
         message: `Event not found.`,
       });
     }
-    if (event.disabled && !req.user.is_admin) {
+    if (event.disabled && !(req.user && req.user.is_admin)) {
       return res.status(403).render("error", {
         page_title: "Register | Volunteer Forum",
         logged_in: Boolean(req.user),
@@ -137,6 +137,31 @@ export const getEvent = async (req, res) => {
         }
       : null;
 
+    let friends_attending = [];
+    if (req.user) {
+      //find accepted friendships
+      const friendships = await Friendship.find({
+        status: "accepted",
+        $or: [{ user_id: req.user._id }, { friend_id: req.user._id }],
+      }).lean();
+      const friendIds = friendships.map((f) =>
+        f.user_id.toString() === req.user._id.toString()
+          ? f.friend_id
+          : f.user_id,
+      );
+      const friendRegs = await EventRegistration.find({
+        event_id: eventId,
+        user_id: { $in: friendIds },
+        cancelled: false,
+      })
+        .populate("user_id", "username profile_picture_url")
+        .lean();
+      friends_attending = friendRegs.map((r) => ({
+        ...r.user_id,
+        id: r.user_id._id.toString(),
+      }));
+    }
+
     console.log(commentsWithReplies);
     res.json({
       page_title: `${event.title} | Volunteer Forum`,
@@ -147,6 +172,7 @@ export const getEvent = async (req, res) => {
       formatted_start_time,
       formatted_end_time,
       comments: commentsWithReplies, //added by Julian
+      friends_attending,
     });
   } catch (err) {
     console.error("Get event error:", err.message);

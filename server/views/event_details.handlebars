@@ -9,17 +9,17 @@
 
   <div class="actions">
     {{#if (eq status "Upcoming")}}
-      {{#if isRegistered}}
-        <button id="register-btn" data-event-id="{{_id}}" class="btn btn-danger">
-          Unregister
-        </button>
-      {{else}}
-        <button id="register-btn" data-event-id="{{_id}}" class="btn btn-primary">
-          Register
-        </button>
-      {{/if}}
+    {{#if isRegistered}}
+    <button id="register-btn" data-event-id="{{_id}}" class="btn btn-danger">
+      Unregister
+    </button>
     {{else}}
-      <p class="text-muted">Registration is closed for this event.</p>
+    <button id="register-btn" data-event-id="{{_id}}" class="btn btn-primary">
+      Register
+    </button>
+    {{/if}}
+    {{else}}
+    <p class="text-muted">Registration is closed for this event.</p>
     {{/if}}
 
     <div id="register-error"></div>
@@ -32,7 +32,7 @@
 <section class="event-details event-feed-headers">
 
   <h2>Overview</h2>
-  <hr/>
+  <hr />
 
   <div class="detail-item">
     <span class="detail-label">Title</span>
@@ -91,6 +91,25 @@
 
 </section>
 
+{{#if logged_in}}
+{{#if friends_attending}}
+<section class="friends-attending">
+  <h2>Friends Attending</h2>
+
+  <ul class="friends-attending-list">
+    {{#each friends_attending}}
+    <li class="friend-item">
+      <a href="/api/v1/users/{{id}}">
+        {{username}}
+      </a>
+    </li>
+    {{/each}}
+  </ul>
+</section>
+
+<hr>
+{{/if}}
+{{/if}}
 
 <hr>
 
@@ -122,11 +141,11 @@
 
 <section class="links-section event-feed-headers">
   <h2>Quick Links:</h2>
-    {{#if is_owner_or_admin}}
+  {{#if is_owner_or_admin}}
   <a href="/event/manage/{{_id}}" class="btn btn-primary manage-btn">
     Manage Event
   </a>
-  <form  action="/api/v1/events/{{_id}}?_method=DELETE" method="POST" id="delete-form">
+  <form action="/api/v1/events/{{_id}}?_method=DELETE" method="POST" id="delete-form">
     <button type="submit" class="btn btn-primary btn-delete">Delete Event</button>
   </form>
   {{/if}}
@@ -163,19 +182,19 @@
     });
   });
 
-    const deleteForm = document.getElementById("delete-form");
+  const deleteForm = document.getElementById("delete-form");
 
-    if (deleteForm) {
-      deleteForm.addEventListener("submit", (e)=>{
-        const confirmed = window.confirm(
-          "Are you sure you want to delete this event?"
-        );
+  if (deleteForm) {
+    deleteForm.addEventListener("submit", (e) => {
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this event?"
+      );
 
-        if (!confirmed) {
-          e.preventDefault();
-        }
-      });
-    }
+      if (!confirmed) {
+        e.preventDefault();
+      }
+    });
+  }
 
 
 </script>
