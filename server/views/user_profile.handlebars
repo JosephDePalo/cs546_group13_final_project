@@ -1,32 +1,34 @@
-<h1>{{username}}</h1>
+<section class="event-feed-headers">
 
-<section>
-  <h2>Basic Info</h2>
-  <ul>
-    {{#if first_name}}<li>First Name: {{first_name}}</li>{{/if}}
-    {{#if last_name}}<li>Last Name: {{last_name}}</li>{{/if}}
-    {{#if email}}<li>Email: {{email}}</li>{{/if}}
-    {{#if phone}}<li>Phone: {{phone}}</li>{{/if}}
-    {{#if gender}}<li>Gender: {{gender}}</li>{{/if}}
-    {{#if age}}<li>Age: {{age}}</li>{{/if}}
-    {{#if city}}<li>City: {{city}}</li>{{/if}}
-    {{#if state}}<li>State: {{state}}</li>{{/if}}
-  </ul>
+  <h1 class="profile-title">user: <span>{{username}} </span></h1>
+
+  <section>
+    <h2>Basic Info</h2>
+    <ul>
+      {{#if first_name}}<li>First Name: {{first_name}}</li>{{/if}}
+      {{#if last_name}}<li>Last Name: {{last_name}}</li>{{/if}}
+      {{#if email}}<li>Email: {{email}}</li>{{/if}}
+      {{#if phone}}<li>Phone: {{phone}}</li>{{/if}}
+      {{#if gender}}<li>Gender: {{gender}}</li>{{/if}}
+      {{#if age}}<li>Age: {{age}}</li>{{/if}}
+      {{#if city}}<li>City: {{city}}</li>{{/if}}
+      {{#if state}}<li>State: {{state}}</li>{{/if}}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Account Stats</h2>
+    <ul>
+      <li>Points: {{account_stats.points}}</li>
+      <li>Events Attended: {{account_stats.events_attended_count}}</li>
+      <li>Friends: {{account_stats.friends_count}}</li>
+      <li>Comments: {{account_stats.comments_count}}</li>
+    </ul>
+  </section>
+
+  {{#if is_owner_or_admin}}
+    <a href="/user/edit/{{_id}}" class="btn btn-primary">Edit Profile</a>
+  {{/if}}
+  <a href="/report/user/{{_id}}" class="btn btn-primary">Report User</a>
+
 </section>
-
-<section>
-  <h2>Account Stats</h2>
-  <ul>
-    <li>Points: {{account_stats.points}}</li>
-    <li>Rank: {{account_stats.rank}}</li>
-    <li>Events Attended: {{account_stats.events_attended_count}}</li>
-    <li>Events Organized: {{account_stats.events_organized}}</li>
-    <li>Friends: {{account_stats.friends_count}}</li>
-    <li>Comments: {{account_stats.comments_count}}</li>
-  </ul>
-</section>
-
-{{#if is_owner_or_admin}}
-<a href="/user/edit/{{_id}}" class="btn btn-primary">Edit Profile</a>
-{{/if}}
-<a href="/report/user/{{_id}}" class="btn btn-primary">Report User</a>

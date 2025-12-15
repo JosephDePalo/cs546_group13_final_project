@@ -203,3 +203,7 @@ nav a:hover {
   color: #444;
   min-width: 100px;
 }
+
+.profile-title {
+  font: lighter;
+}
