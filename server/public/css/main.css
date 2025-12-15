@@ -67,3 +67,8 @@ h1 {
   background-color: #f9f9f9;
   border-left: 3px solid #007bff;
 }
+.comment-username {
+  font-weight: 600;
+  font-size: 14px;
+  color: #222;
+}

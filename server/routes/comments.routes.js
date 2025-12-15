@@ -23,10 +23,20 @@ const router = express.Router();
 router.post("/", isLoggedIn, createComment);
 
 // Get comments list
-router.get("/events/:event_id/comments", getEventComments);
-router.get("/comments/:comment_id", getCommentById);
-router.get("/comments/:comment_id/replies", getCommentReplies);
-router.get("/users/:user_id/comments", getUserComments);
+router.get("/events/:event_id/comments", isLoggedIn, getEventComments);
+router.get(
+  "/comments/:comment_id",
+  isLoggedIn,
+  checkCommentAvailability,
+  getCommentById,
+);
+router.get(
+  "/comments/:comment_id/replies",
+  isLoggedIn,
+  checkCommentAvailability,
+  getCommentReplies,
+);
+router.get("/users/:user_id/comments", isLoggedIn, getUserComments);
 
 // Delete comment
 router.delete("/:comment_id", isLoggedIn, checkCommentOwnership, deleteComment);
