@@ -1,7 +1,7 @@
 // Imports
 import Report from "../models/report.model.js";
 import Event from "../models/event.model.js";
-// import Comment from "../models/comment.model.js"
+import Comment from "../models/comments.model.js"
 import User from "../models/user.model.js";
 
 // @desc     Create new report
@@ -46,6 +46,15 @@ export const newReport = async (req, res) => {
           target_id: target_id 
         });
 
+        for (let i = 0; i < desired_events.length; i++) {
+          let reporter_id = desired_events[i].reporter_id;
+          if (reporter_id.toString() === req.user.id) {
+            return res.status(500).json({
+              message: "You have already reported this item.",
+            });
+          }
+        }
+
         num_reports_events = desired_events.length;
         if ((num_reports_events + 1) >= 2) {
             try {
@@ -78,6 +87,15 @@ export const newReport = async (req, res) => {
             target_type: "comment",
             target_id: target_id 
           });
+
+        for (let i = 0; i < desired_comments.length; i++) {
+          let reporter_id = desired_comments[i].reporter_id;
+          if (reporter_id.toString() === req.user.id) {
+            return res.status(500).json({
+              message: "You have already reported this item.",
+            });
+          }
+        }
 
         num_reports_comments = desired_comments.length; 
         if ((num_reports_comments + 1) >= 2) {
@@ -112,6 +130,16 @@ export const newReport = async (req, res) => {
             target_type: "user",
             target_id: target_id 
           });
+  
+
+        for (let i = 0; i < desired_users.length; i++) {
+          let reporter_id = desired_users[i].reporter_id;
+          if (reporter_id.toString() === req.user.id) {
+            return res.status(500).json({
+              message: "You have already reported this item.",
+            });
+          }
+        }
 
         num_reports_users = desired_users.length;
 
