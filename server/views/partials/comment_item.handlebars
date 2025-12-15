@@ -2,6 +2,12 @@
   different layout--}} data-comment-id="{{id}}">
   <div class="comment-header">
    <h3> {{user_id.username}}</h3>
+    <a
+    class="comment-username"
+    href="/api/v1/users/{{user_id._id}}"
+  >
+    {{user_id.username}}
+  </a>
   </div>
 
   <div class="comment-body">
@@ -11,11 +17,13 @@
   <div class="comment-footer">
     <small>{{created_at}}</small>
 
-    {{!-- Only logged-in users can reply. --}}
+    {{!-- Only logged-in users and no parent_comment_id comment can reply. --}}
     {{#if user}}
-    <button type="button" class="reply-btn" data-parent-id="{{id}}">
-      Reply
-    </button>
+      {{#unless parent_comment_id}}
+        <button type="button" class="reply-btn" data-parent-id="{{id}}">
+          Reply
+        </button>
+      {{/unless}}
     {{/if}}
   </div>
 

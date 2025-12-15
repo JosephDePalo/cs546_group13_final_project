@@ -52,7 +52,14 @@ export const createComment = async (req, res) => {
           message: `Unable to reply to disabled comments`,
         });
       }
-
+      if (parentComment.parent_comment_id) {
+        return res.status(400).render("error", {
+          page_title: "Register | Volunteer Forum",
+          logged_in: Boolean(req.user),
+          user_id: req.user ? req.user._id : null,
+          message: "Replies to replies are not allowed.",
+        });
+      }
       // Make sure the replies are to comments from the same event.
       if (parentComment.event_id.toString() !== event_id) {
         return res.status(400).render("error", {

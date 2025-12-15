@@ -205,5 +205,11 @@ nav a:hover {
 }
 
 .profile-title {
-  font: lighter;
+  font-weight: lighter;
+}
+
+.comment-username {
+  font-weight: 600;
+  font-size: 14px;
+  color: #222;
 }
