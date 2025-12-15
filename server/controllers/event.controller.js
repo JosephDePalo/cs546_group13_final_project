@@ -38,17 +38,27 @@ export const newEvent = async (req, res) => {
       });
     }
 
+    // XSS
+
+    let valid_title = xss(title);
+    let valid_description = xss(description);
+    let valid_url = xss(location_url);
+    let valid_max_capacity = xss(max_capacity);
+    let valid_address = xss(address);
+    let valid_city = xss(city);
+    let valid_state = xss(state);
+
     const event = await Event.create({
       organizer_id: req.user._id,
-      title,
-      description,
-      location_url,
+      title: valid_title,
+      description: valid_description,
+      location_url: valid_url,
       start_time,
       end_time,
-      max_capacity,
-      address,
-      city,
-      state,
+      max_capacity: valid_max_capacity,
+      address: valid_address,
+      city: valid_city,
+      state: valid_state,
     });
 
     res.redirect(`/events/${event._id}`);
@@ -226,6 +236,14 @@ export const updateEventDetails = async (req, res) => {
         message: "Completed events cannot have their status changed.",
       });
     }
+
+    updates.title = xss(updates.title);
+    updates.description = xss(updates.description);
+    updates.location_url = xss(updates.location_url);
+    updates.max_capacity = xss(updates.max_capacity);
+    updates.address = xss(updates.address);
+    updates.city = xss(updates.city);
+    updates.state = xss(updates.state);
 
     const updatedEvent = await Event.findByIdAndUpdate(req.params.id, updates, {
       new: true,
