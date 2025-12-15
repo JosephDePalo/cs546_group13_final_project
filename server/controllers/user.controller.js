@@ -60,9 +60,13 @@ export const register = async (req, res) => {
       });
     }
 
+    // XSS
+    let valid_username = xss(username);
+    let valid_email = xss(email);
+    
     const user = await User.create({
-      username,
-      email,
+      username: valid_username,
+      email: valid_email,
       password_hash: password,
       is_admin: Boolean(is_admin),
     });
@@ -124,6 +128,17 @@ export const updateUserProfile = async (req, res) => {
     delete updates.is_admin;
     delete updates.account_stats;
     delete updates.password;
+
+    updates.username = xss(updates.username);
+    updates.email = xss(updates.email);
+    updates.phone = xss(updates.phone);
+    updates.first_name = xss(updates.first_name);
+    updates.last_name = xss(updates.last_name);
+    updates.gender = xss(updates.gender);
+    updates.city = xss(updates.city);
+    updates.state = xss(updates.state);
+    updates.age = xss(updates.age);
+    updates.otp = xss(updates.otp);
 
     const updatedUser = await User.findByIdAndUpdate(req.user._id, updates, {
       new: true,
@@ -320,6 +335,17 @@ export const updateUserById = async (req, res) => {
     delete updates.is_admin;
     delete updates.account_stats;
     delete updates.password;
+
+    updates.username = xss(updates.username);
+    updates.email = xss(updates.email);
+    updates.phone = xss(updates.phone);
+    updates.first_name = xss(updates.first_name);
+    updates.last_name = xss(updates.last_name);
+    updates.gender = xss(updates.gender);
+    updates.city = xss(updates.city);
+    updates.state = xss(updates.state);
+    updates.age = xss(updates.age);
+    updates.otp = xss(updates.otp);
 
     const updatedUser = await User.findByIdAndUpdate(req.params.id, updates, {
       new: true,
