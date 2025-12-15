@@ -1,8 +1,8 @@
 import express from "express";
 import {
-  getReport,
-  updateReport,
-  deleteReport,
+  // getReport,
+  // updateReport,
+  // deleteReport,
   newReport,
 } from "../controllers/report.controller.js";
 
@@ -18,11 +18,11 @@ router.route("/").post(isLoggedIn, newReport);
 
 // Get report by reportId | update report | delete report (admin priviledges only)
 
-router
-  .route("/:id")
-  .get(isLoggedIn, isAdmin, getReport)
-  .put(isLoggedIn, isAdmin, updateReport)
-  .delete(isLoggedIn, isAdmin, deleteReport);
+// router
+//   .route("/:id")
+//   .get(isLoggedIn, isAdmin, getReport)
+//   .put(isLoggedIn, isAdmin, updateReport)
+//   .delete(isLoggedIn, isAdmin, deleteReport);
 
 // Get all reports (admin priviledges only)
 
